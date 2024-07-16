@@ -1,31 +1,16 @@
-project(vtkIECTransformLogic)
+cmake_minimum_required (VERSION 3.21)
 
-set(KIT ${PROJECT_NAME})
+project (vtkIECTransformLogic)
 
-set(${KIT}_INCLUDE_DIRECTORIES
-  #${SlicerRtCommon_INCLUDE_DIRS}
-  #${vtkSlicerSubjectHierarchyModuleLogic_INCLUDE_DIRS}
-  ${CMAKE_CURRENT_SOURCE_DIR}
-  ${CMAKE_CURRENT_BINARY_DIR}
+set(vtkIECTransformLogic_SRCS
+  ../vtkIECTransformLogic/src/vtkIECTransformLogic.cxx
+  ../vtkIECTransformLogic/src/vtkIECTransformLogic.h
   )
 
-set(${KIT}_SRCS
-  vtkIECTransformLogic.cxx
-  vtkIECTransformLogic.h
-  )
+add_library(vtkIECTransformLogic ${vtkIECTransformLogic_SRCS})
 
-set(${KIT}_TARGET_LIBRARIES
-  #vtkSlicerRtCommon
-  #vtkSlicerSubjectHierarchyModuleLogic
-  ${VTK_LIBRARIES}
-  )
+target_include_directories(vtkIECTransformLogic PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
-#-----------------------------------------------------------------------------
-SlicerMacroBuildModuleLogic(
-  NAME ${KIT}
-  #EXPORT_DIRECTIVE ${${KIT}_EXPORT_DIRECTIVE}
-  INCLUDE_DIRECTORIES ${${KIT}_INCLUDE_DIRECTORIES}
-  SRCS ${${KIT}_SRCS}
-  TARGET_LIBRARIES ${${KIT}_TARGET_LIBRARIES}
-  )
-  
+find_package(VTK)
+
+target_link_libraries(vtkIECTransformLogic ${VTK_LIBRARIES})

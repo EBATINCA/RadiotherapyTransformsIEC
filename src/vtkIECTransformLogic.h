@@ -19,10 +19,8 @@
 
 ==============================================================================*/
 
-#ifndef __vtkSlicerIECTransformLogic_h
-#define __vtkSlicerIECTransformLogic_h
-
-#include "vtkSlicerBeamsModuleLogicExport.h"
+#ifndef __vtkIECTransformLogic_h
+#define __vtkIECTransformLogic_h
 
 // STD includes
 #include <map>
@@ -90,7 +88,7 @@ Legend:
                         0 1 0
 */
 
-class VTK_SLICER_BEAMS_LOGIC_EXPORT vtkSlicerIECTransformLogic : public vtkObject
+class vtkIECTransformLogic : public vtkObject
 {
 public:
   enum CoordinateSystemIdentifier
@@ -115,8 +113,8 @@ public:
   typedef std::list< CoordinateSystemIdentifier > CoordinateSystemsList;
 
 public:
-  static vtkSlicerIECTransformLogic *New();
-  vtkTypeMacro(vtkSlicerIECTransformLogic, vtkObject);
+  static vtkIECTransformLogic *New();
+  vtkTypeMacro(vtkIECTransformLogic, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent) override;
 
   /// Update GantryToFixedReference transform based on gantry angle parameter
@@ -134,7 +132,7 @@ public:
   /// (e.g. transformation from Patient RAS frame to Collimation frame: RAS -> Patient -> TableTop -> Eccentric -> Patient Support -> Fixed reference -> Gantry -> Collimator)  //TODO: Deprecated
   /// \return Success flag (false on any error)
   bool GetTransformBetween(CoordinateSystemIdentifier fromFrame, CoordinateSystemIdentifier toFrame,
-    vtkGeneralTransform* outputTransform, bool transformForBeam = true);
+    vtkGeneralTransform* outputTransform, bool transformForBeam=false);
   //TODO: See this transformForBeam part if still needed
 
   /// @brief Get coordinate system identifiers from root system down to frame system
@@ -227,12 +225,12 @@ protected:
   vtkNew<vtkTransform> RasToPatientConcatenatedTransform;
 
 protected:
-  vtkSlicerIECTransformLogic();
-  ~vtkSlicerIECTransformLogic() override;
+  vtkIECTransformLogic();
+  ~vtkIECTransformLogic() override;
 
 private:
-  vtkSlicerIECTransformLogic(const vtkSlicerIECTransformLogic&) = delete;
-  void operator=(const vtkSlicerIECTransformLogic&) = delete;
+  vtkIECTransformLogic(const vtkIECTransformLogic&) = delete;
+  void operator=(const vtkIECTransformLogic&) = delete;
 
 private:
   std::vector<vtkTransform*> ElementaryTransforms;
