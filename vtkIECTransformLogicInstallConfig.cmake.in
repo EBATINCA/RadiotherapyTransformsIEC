@@ -1,0 +1,6 @@
+set(vtkIECTransformLogic_CMAKE_DIR "@CMAKE_INSTALL_PREFIX@/@vtkIECTransformLogic_INSTALL_CMAKE_DIR@")
+set(vtkIECTransformLogic_INCLUDE_DIRS "@CMAKE_INSTALL_PREFIX@/@vtkIECTransformLogic_INSTALL_INCLUDE_DIR@")
+set(vtkIECTransformLogic_LIB_DIR "@CMAKE_INSTALL_PREFIX@/@vtkIECTransformLogic_INSTALL_LIB_DIR@")
+set(VTK_DIR "@VTK_DIR@")
+
+set(vtkIECTransformLogic_USE_UTF8 "@vtkIECTransformLogic_USE_UTF8@")
