@@ -19,8 +19,8 @@
 
 ==============================================================================*/
 
-// Beams includes
-#include "vtkSlicerIECTransformLogic.h"
+// IEC Logic includes
+#include "vtkIECTransformLogic.h"
 
 // VTK includes
 #include <vtkNew.h>
@@ -32,10 +32,10 @@
 #include <array>
 
 //----------------------------------------------------------------------------
-vtkStandardNewMacro(vtkSlicerIECTransformLogic);
+vtkStandardNewMacro(vtkIECTransformLogic);
 
 //-----------------------------------------------------------------------------
-vtkSlicerIECTransformLogic::vtkSlicerIECTransformLogic()
+vtkIECTransformLogic::vtkIECTransformLogic()
 {
   // Setup coordinate system ID to name map
   this->CoordinateSystemsMap.clear();
@@ -150,7 +150,7 @@ vtkSlicerIECTransformLogic::vtkSlicerIECTransformLogic()
 }
 
 //-----------------------------------------------------------------------------
-vtkSlicerIECTransformLogic::~vtkSlicerIECTransformLogic()
+vtkIECTransformLogic::~vtkIECTransformLogic()
 {
   this->CoordinateSystemsMap.clear();
   this->IECTransforms.clear();
@@ -158,7 +158,7 @@ vtkSlicerIECTransformLogic::~vtkSlicerIECTransformLogic()
 }
 
 //----------------------------------------------------------------------------
-void vtkSlicerIECTransformLogic::PrintSelf(ostream& os, vtkIndent indent)
+void vtkIECTransformLogic::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
 
@@ -193,28 +193,28 @@ void vtkSlicerIECTransformLogic::PrintSelf(ostream& os, vtkIndent indent)
 }
 
 //----------------------------------------------------------------------------
-void vtkSlicerIECTransformLogic::UpdateGantryToFixedReferenceTransform(double gantryRotationAngleDeg)
+void vtkIECTransformLogic::UpdateGantryToFixedReferenceTransform(double gantryRotationAngleDeg)
 {
   this->GantryToFixedReferenceTransform->Identity();
   this->GantryToFixedReferenceTransform->RotateY(gantryRotationAngleDeg);
 }
 
 //----------------------------------------------------------------------------
-void vtkSlicerIECTransformLogic::UpdateCollimatorToGantryTransform(double collimatorRotationAngleDeg)
+void vtkIECTransformLogic::UpdateCollimatorToGantryTransform(double collimatorRotationAngleDeg)
 {
   this->CollimatorToGantryTransform->Identity();
   this->CollimatorToGantryTransform->RotateZ(collimatorRotationAngleDeg);
 }
 
 //-----------------------------------------------------------------------------
-void vtkSlicerIECTransformLogic::UpdatePatientSupportRotationToFixedReferenceTransform(double patientSupportRotationAngleDeg)
+void vtkIECTransformLogic::UpdatePatientSupportRotationToFixedReferenceTransform(double patientSupportRotationAngleDeg)
 {
   this->PatientSupportRotationToFixedReferenceTransform->Identity();
   this->PatientSupportRotationToFixedReferenceTransform->RotateZ(patientSupportRotationAngleDeg);
 }
 
 //-----------------------------------------------------------------------------
-vtkTransform* vtkSlicerIECTransformLogic::GetElementaryTransformBetween(
+vtkTransform* vtkIECTransformLogic::GetElementaryTransformBetween(
   CoordinateSystemIdentifier fromFrame, CoordinateSystemIdentifier toFrame)
 {
   std::string requestedTransformName = this->GetTransformNameBetween(fromFrame, toFrame);
@@ -232,15 +232,15 @@ vtkTransform* vtkSlicerIECTransformLogic::GetElementaryTransformBetween(
 }
 
 //-----------------------------------------------------------------------------
-std::string vtkSlicerIECTransformLogic::GetTransformNameBetween(
+std::string vtkIECTransformLogic::GetTransformNameBetween(
   CoordinateSystemIdentifier fromFrame, CoordinateSystemIdentifier toFrame)
 {
   return this->CoordinateSystemsMap[fromFrame] + "To" + this->CoordinateSystemsMap[toFrame] + "Transform";
 }
 
 //-----------------------------------------------------------------------------
-bool vtkSlicerIECTransformLogic::GetTransformBetween(vtkSlicerIECTransformLogic::CoordinateSystemIdentifier fromFrame, vtkSlicerIECTransformLogic::CoordinateSystemIdentifier toFrame,
-  vtkGeneralTransform* outputTransform, bool transformForBeam/* = true*/)
+bool vtkIECTransformLogic::GetTransformBetween(vtkIECTransformLogic::CoordinateSystemIdentifier fromFrame, vtkIECTransformLogic::CoordinateSystemIdentifier toFrame,
+  vtkGeneralTransform* outputTransform, bool transformForBeam/*=false*/)
 {
   if (!outputTransform)
   {
@@ -248,11 +248,11 @@ bool vtkSlicerIECTransformLogic::GetTransformBetween(vtkSlicerIECTransformLogic:
     return false;
   }
 
-  vtkSlicerIECTransformLogic::CoordinateSystemsList fromFramePath, toFramePath;
+  vtkIECTransformLogic::CoordinateSystemsList fromFramePath, toFramePath;
   if (this->GetPathToRoot(fromFrame, fromFramePath) && this->GetPathFromRoot(toFrame, toFramePath))
   {
-    std::vector< vtkSlicerIECTransformLogic::CoordinateSystemIdentifier > toFrameVector(toFramePath.size());
-    std::vector< vtkSlicerIECTransformLogic::CoordinateSystemIdentifier > fromFrameVector(fromFramePath.size());
+    std::vector< vtkIECTransformLogic::CoordinateSystemIdentifier > toFrameVector(toFramePath.size());
+    std::vector< vtkIECTransformLogic::CoordinateSystemIdentifier > fromFrameVector(fromFramePath.size());
 
     std::copy(toFramePath.begin(), toFramePath.end(), toFrameVector.begin());
     std::copy(fromFramePath.begin(), fromFramePath.end(), fromFrameVector.begin());
@@ -261,7 +261,7 @@ bool vtkSlicerIECTransformLogic::GetTransformBetween(vtkSlicerIECTransformLogic:
     outputTransform->PostMultiply();
     for (size_t i = 0; i < fromFrameVector.size() - 1; ++i)
     {
-      vtkSlicerIECTransformLogic::CoordinateSystemIdentifier parent, child;
+      vtkIECTransformLogic::CoordinateSystemIdentifier parent, child;
       child = fromFrameVector[i];
       parent = fromFrameVector[i + 1];
 
@@ -284,7 +284,7 @@ bool vtkSlicerIECTransformLogic::GetTransformBetween(vtkSlicerIECTransformLogic:
 
     for (size_t i = 0; i < toFrameVector.size() - 1; ++i)
     {
-      vtkSlicerIECTransformLogic::CoordinateSystemIdentifier parent, child;
+      vtkIECTransformLogic::CoordinateSystemIdentifier parent, child;
       parent = toFrameVector[i];
       child = toFrameVector[i + 1];
 
@@ -320,11 +320,11 @@ bool vtkSlicerIECTransformLogic::GetTransformBetween(vtkSlicerIECTransformLogic:
 }
 
 //-----------------------------------------------------------------------------
-bool vtkSlicerIECTransformLogic::GetPathToRoot(vtkSlicerIECTransformLogic::CoordinateSystemIdentifier frame, vtkSlicerIECTransformLogic::CoordinateSystemsList& path)
+bool vtkIECTransformLogic::GetPathToRoot(vtkIECTransformLogic::CoordinateSystemIdentifier frame, vtkIECTransformLogic::CoordinateSystemsList& path)
 {
-  if (frame == vtkSlicerIECTransformLogic::CoordinateSystemIdentifier::FixedReference)
+  if (frame == vtkIECTransformLogic::CoordinateSystemIdentifier::FixedReference)
   {
-    path.push_back(vtkSlicerIECTransformLogic::FixedReference);
+    path.push_back(vtkIECTransformLogic::FixedReference);
     return true;
   }
 
@@ -333,13 +333,13 @@ bool vtkSlicerIECTransformLogic::GetPathToRoot(vtkSlicerIECTransformLogic::Coord
   {
     for (auto& pair : this->CoordinateSystemsHierarchy)
     {
-      vtkSlicerIECTransformLogic::CoordinateSystemIdentifier parent = pair.first;
+      vtkIECTransformLogic::CoordinateSystemIdentifier parent = pair.first;
 
       auto& children = pair.second;
       auto iter = std::find(children.begin(), children.end(), frame);
       if (iter != children.end())
       {
-        vtkSlicerIECTransformLogic::CoordinateSystemIdentifier id = *iter;
+        vtkIECTransformLogic::CoordinateSystemIdentifier id = *iter;
 
         vtkDebugMacro("GetPathToRoot: Checking affine transformation "
           << "\"" << this->CoordinateSystemsMap[id] << "\" -> "
@@ -347,14 +347,14 @@ bool vtkSlicerIECTransformLogic::GetPathToRoot(vtkSlicerIECTransformLogic::Coord
 
         frame = parent;
         path.push_back(id);
-        if (frame != vtkSlicerIECTransformLogic::FixedReference)
+        if (frame != vtkIECTransformLogic::FixedReference)
         {
           found = true;
           break;
         }
         else
         {
-          path.push_back(vtkSlicerIECTransformLogic::FixedReference);
+          path.push_back(vtkIECTransformLogic::FixedReference);
         }
       }
       else
@@ -368,7 +368,7 @@ bool vtkSlicerIECTransformLogic::GetPathToRoot(vtkSlicerIECTransformLogic::Coord
 }
 
 //-----------------------------------------------------------------------------
-bool vtkSlicerIECTransformLogic::GetPathFromRoot(vtkSlicerIECTransformLogic::CoordinateSystemIdentifier frame, vtkSlicerIECTransformLogic::CoordinateSystemsList& path)
+bool vtkIECTransformLogic::GetPathFromRoot(vtkIECTransformLogic::CoordinateSystemIdentifier frame, vtkIECTransformLogic::CoordinateSystemsList& path)
 {
   if (this->GetPathToRoot(frame, path))
   {

@@ -1,0 +1,8 @@
+include("${CMAKE_CURRENT_BINARY_DIR}/vtkIECTransformLogicTargets.cmake")
+
+set(vtkIECTransformLogic_CMAKE_DIR "@vtkIECTransformLogic_CMAKE_DIR@")
+set(vtkIECTransformLogic_INCLUDE_DIRS "@vtkIECTransformLogic_INCLUDE_DIRS@")
+set(vtkIECTransformLogic_LIB_DIR "@CMAKE_BINARY_DIR@/bin" "@CMAKE_BINARY_DIR@")
+set(VTK_DIR "@VTK_DIR@")
+
+set(vtkIECTransformLogic_USE_UTF8 "@vtkIECTransformLogic_USE_UTF8@")
