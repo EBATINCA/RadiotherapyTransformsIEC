@@ -29,7 +29,7 @@
 #include <vtkTransform.h>
 
 // STD includes
-#include <array>
+#include <algorithm>
 
 //----------------------------------------------------------------------------
 vtkStandardNewMacro(vtkIECTransformLogic);
