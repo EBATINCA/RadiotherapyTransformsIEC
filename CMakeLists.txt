@@ -24,7 +24,7 @@ find_package(VTK REQUIRED)
 if(${VTK_VERSION} VERSION_LESS "8.90")
   include(${VTK_USE_FILE})
 endif()
-set(vtkIECTransformLogic_LIBS ${VTK_LIBRARIES})
+set(vtkIECTransformLogic_LIBS VTK::CommonTransforms)
 
 # --------------------------------------------------------------------------
 # Options
