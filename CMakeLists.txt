@@ -21,7 +21,7 @@ include(vtkIECTransformLogicFunctionAddExecutable)
 # VTK
 #
 find_package(VTK 9.2 REQUIRED)
-set(vtkIECTransformLogic_LIBS ${VTK_LIBRARIES})
+set(vtkIECTransformLogic_LIBS VTK::CommonTransforms)
 
 # --------------------------------------------------------------------------
 # Options
