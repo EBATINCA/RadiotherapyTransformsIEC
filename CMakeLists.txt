@@ -172,9 +172,7 @@ if(NOT DEFINED ${PROJECT_NAME}_INSTALL_LIB_DIR)
 endif()
 
 install(TARGETS ${lib_name}
-  RUNTIME DESTINATION ${CMAKE_BINARY_DIR} COMPONENT RuntimeLibraries
-  LIBRARY DESTINATION ${CMAKE_BINARY_DIR} COMPONENT RuntimeLibraries
-  ARCHIVE DESTINATION ${CMAKE_BINARY_DIR} COMPONENT Development
+  EXPORT ${lib_name}
   )
 
 # --------------------------------------------------------------------------
