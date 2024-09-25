@@ -118,7 +118,7 @@ set(include_dirs
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${CMAKE_CURRENT_BINARY_DIR}
   )
-include_directories(BEFORE ${include_dirs})
+#~ include_directories(BEFORE ${include_dirs})
 
 # --------------------------------------------------------------------------
 # Build library
@@ -127,12 +127,11 @@ set(lib_name ${PROJECT_NAME})
 
 set(srcs ${vtkIECTransformLogic_SRCS})
 add_library(${lib_name} SHARED ${srcs}) #SHARED = THERE IS DLL FILE
-
+target_include_directories(${lib_name} PUBLIC
+  $<BUILD_INTERFACE:${include_dirs}>
+  $<INSTALL_INTERFACE:include/${lib_name}>  # <prefix>/include/mylib
+)
 target_link_libraries(${lib_name} PUBLIC ${vtkIECTransformLogic_LIBS})
-
-message("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ")
-message(${CMAKE_BINARY_DIR})
-message(${CMAKE_BINARY_DIR})
 
 # Optionally, specify the output directory for the DLL, LIB, PDB, etc.
 #set_target_properties(${lib_name} PROPERTIES
