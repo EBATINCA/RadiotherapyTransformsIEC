@@ -133,10 +133,6 @@ target_include_directories(${lib_name} PUBLIC
 )
 target_link_libraries(${lib_name} PUBLIC ${vtkIECTransformLogic_LIBS})
 
-#~ message("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ")
-#~ message(${CMAKE_BINARY_DIR})
-#~ message(${CMAKE_BINARY_DIR})
-
 # Optionally, specify the output directory for the DLL, LIB, PDB, etc.
 #set_target_properties(${lib_name} PROPERTIES
 #    RUNTIME_OUTPUT_DIRECTORY c/d/_Extensions/inner-build/lib/Slicer-5.7/qt-loadable-modules/   # For .dll
