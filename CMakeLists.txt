@@ -20,10 +20,7 @@ include(vtkIECTransformLogicFunctionAddExecutable)
 #
 # VTK
 #
-find_package(VTK REQUIRED)
-if(${VTK_VERSION} VERSION_LESS "8.90")
-  include(${VTK_USE_FILE})
-endif()
+find_package(VTK 9.2 REQUIRED)
 set(vtkIECTransformLogic_LIBS VTK::CommonTransforms)
 
 # --------------------------------------------------------------------------
