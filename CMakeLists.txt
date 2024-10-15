@@ -116,6 +116,7 @@ set(vtkIECTransformLogic_SRCS
 # --------------------------------------------------------------------------
 set(include_dirs
   ${CMAKE_CURRENT_SOURCE_DIR}
+  ${CMAKE_CURRENT_SOURCE_DIR}/src
   ${CMAKE_CURRENT_BINARY_DIR}
   )
 #~ include_directories(BEFORE ${include_dirs})
