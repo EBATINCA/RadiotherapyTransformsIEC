@@ -128,8 +128,8 @@ set(lib_name ${PROJECT_NAME})
 set(srcs ${vtkIECTransformLogic_SRCS})
 add_library(${lib_name} SHARED ${srcs}) #SHARED = THERE IS DLL FILE
 target_include_directories(${lib_name} PUBLIC
-  $<BUILD_INTERFACE:${include_dirs}>
-  $<INSTALL_INTERFACE:include/${lib_name}>  # <prefix>/include/mylib
+  "$<BUILD_INTERFACE:${include_dirs}>"
+  "$<INSTALL_INTERFACE:${INSTALL_PREFIX}/include/${lib_name}>"  # <prefix>/include/mylib
 )
 target_link_libraries(${lib_name} PUBLIC ${vtkIECTransformLogic_LIBS})
 
