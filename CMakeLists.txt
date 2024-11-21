@@ -119,7 +119,6 @@ set(include_dirs
   ${CMAKE_CURRENT_SOURCE_DIR}/src
   ${CMAKE_CURRENT_BINARY_DIR}
   )
-#~ include_directories(BEFORE ${include_dirs})
 
 # --------------------------------------------------------------------------
 # Build library
@@ -133,14 +132,6 @@ target_include_directories(${lib_name} PUBLIC
   "$<INSTALL_INTERFACE:${INSTALL_PREFIX}/include/${lib_name}>"  # <prefix>/include/mylib
 )
 target_link_libraries(${lib_name} PUBLIC ${vtkIECTransformLogic_LIBS})
-
-# Optionally, specify the output directory for the DLL, LIB, PDB, etc.
-#set_target_properties(${lib_name} PROPERTIES
-#    RUNTIME_OUTPUT_DIRECTORY c/d/_Extensions/inner-build/lib/Slicer-5.7/qt-loadable-modules/   # For .dll
-#    ARCHIVE_OUTPUT_DIRECTORY "c/d/_Extensions/inner-build/lib/Slicer-5.7/qt-loadable-modules/"   # For .lib
-#    LIBRARY_OUTPUT_DIRECTORY "c/d/_Extensions/inner-build/lib/Slicer-5.7/qt-loadable-modules/"   # For .lib and .exp
-#    PDB_OUTPUT_DIRECTORY c/d/_Extensions/inner-build/lib/Slicer-5.7/qt-loadable-modules/       # For .pdb
-#)
 
 # --------------------------------------------------------------------------
 # Folder
