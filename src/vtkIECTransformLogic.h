@@ -26,11 +26,11 @@
 #include "../vtkIECTransformLogicExport.h"
 
 // STD includes
-#include <list>
 #include <map>
 #include <vector>
 #include <cstdint>
 #include <array>
+#include <list>
 
 // VTK includes
 #include <vtkNew.h>
@@ -95,7 +95,8 @@ Legend:
 class VTK_IEC_TRANSFORM_LOGIC_EXPORT vtkIECTransformLogic : public vtkObject
 {
 public:
-    enum CoordinateSystemIdentifier {
+    enum CoordinateSystemIdentifier
+    {
         RAS = 0,
         FixedReference,
         Gantry,
@@ -113,12 +114,12 @@ public:
         Focus,
         LastIECCoordinateFrame // Last index used for adding more coordinate systems externally
     };
-    typedef std::list<CoordinateSystemIdentifier> CoordinateSystemsList;
+    typedef std::list< CoordinateSystemIdentifier > CoordinateSystemsList;
 
 public:
     static vtkIECTransformLogic *New();
     vtkTypeMacro(vtkIECTransformLogic, vtkObject);
-    void PrintSelf(ostream &os, vtkIndent indent) override;
+    void PrintSelf(ostream& os, vtkIndent indent) override;
 
   /// @brief Update GantryToFixedReference transform based on gantry angle parameter
   void UpdateGantryToFixedReferenceTransform(double gantryRotationAngleDeg);
@@ -163,15 +164,12 @@ public:
     /// @param transformForBeam - calculate dynamic transformation for beam model or other models
     /// (e.g. transformation from Patient RAS frame to Collimation frame: RAS -> Patient -> TableTop -> Eccentric -> Patient Support -> Fixed reference -> Gantry -> Collimator)  //TODO: Deprecated
     /// \return Success flag (false on any error)
-    bool GetTransformBetween(CoordinateSystemIdentifier fromFrame,
-                             CoordinateSystemIdentifier toFrame,
-                             vtkGeneralTransform *outputTransform,
-                             bool transformForBeam = false);
+    bool GetTransformBetween(CoordinateSystemIdentifier fromFrame, CoordinateSystemIdentifier toFrame,
+                             vtkGeneralTransform* outputTransform, bool transformForBeam=false);
     //TODO: See this transformForBeam part if still needed
 
     /// @brief Get coordinate system identifiers from root system down to frame system
-    vtkTransform *GetElementaryTransformBetween(CoordinateSystemIdentifier fromFrame,
-                                                CoordinateSystemIdentifier toFrame);
+    vtkTransform* GetElementaryTransformBetween(CoordinateSystemIdentifier fromFrame, CoordinateSystemIdentifier toFrame);
 
 public:
     //std::map<CoordinateSystemIdentifier, std::string> GetCoordinateSystemsMap()
@@ -251,11 +249,11 @@ public:
 protected:
     /// @brief Get coordinate system identifiers from frame system up to root system
     /// Root system = FixedReference system, see IEC 61217:2011 hierarchy
-    bool GetPathToRoot(CoordinateSystemIdentifier frame, CoordinateSystemsList &path);
+    bool GetPathToRoot(CoordinateSystemIdentifier frame, CoordinateSystemsList& path);
 
     /// @brief Get coordinate system identifiers from root system down to frame system
     /// Root system = FixedReference system, see IEC 61217:2011 hierarchy
-    bool GetPathFromRoot(CoordinateSystemIdentifier frame, CoordinateSystemsList &path);
+    bool GetPathFromRoot(CoordinateSystemIdentifier frame, CoordinateSystemsList& path);
 
 protected:
   /// @brief Map from \sa CoordinateSystemIdentifier to coordinate system name. Used for getting transforms
@@ -301,11 +299,11 @@ protected:
     ~vtkIECTransformLogic() override;
 
 private:
-    vtkIECTransformLogic(const vtkIECTransformLogic &) = delete;
-    void operator=(const vtkIECTransformLogic &) = delete;
+    vtkIECTransformLogic(const vtkIECTransformLogic&) = delete;
+    void operator=(const vtkIECTransformLogic&) = delete;
 
 private:
-    std::vector<vtkTransform *> ElementaryTransforms;
+    std::vector<vtkTransform*> ElementaryTransforms;
 };
 
 #endif
