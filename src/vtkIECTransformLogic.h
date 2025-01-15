@@ -95,31 +95,31 @@ Legend:
 class VTK_IEC_TRANSFORM_LOGIC_EXPORT vtkIECTransformLogic : public vtkObject
 {
 public:
-    enum CoordinateSystemIdentifier
-    {
-        RAS = 0,
-        FixedReference,
-        Gantry,
-        Collimator,
-        LeftImagingPanel,
-        RightImagingPanel,
-        PatientSupportRotation, // Not part of the standard, but useful for visualization
-        PatientSupport,
-        TableTopEccentricRotation,
-        TableTop,
-        FlatPanel,
-        WedgeFilter,
-        Patient,
-        Imager,
-        Focus,
-        LastIECCoordinateFrame // Last index used for adding more coordinate systems externally
-    };
-    typedef std::list< CoordinateSystemIdentifier > CoordinateSystemsList;
+  enum CoordinateSystemIdentifier
+  {
+    RAS = 0,
+    FixedReference,
+    Gantry,
+    Collimator,
+    LeftImagingPanel,
+    RightImagingPanel,
+    PatientSupportRotation, // Not part of the standard, but useful for visualization
+    PatientSupport,
+    TableTopEccentricRotation,
+    TableTop,
+    FlatPanel,
+    WedgeFilter,
+    Patient,
+    Imager,
+    Focus,
+    LastIECCoordinateFrame // Last index used for adding more coordinate systems externally
+  };
+  typedef std::list< CoordinateSystemIdentifier > CoordinateSystemsList;
 
 public:
-    static vtkIECTransformLogic *New();
-    vtkTypeMacro(vtkIECTransformLogic, vtkObject);
-    void PrintSelf(ostream& os, vtkIndent indent) override;
+  static vtkIECTransformLogic *New();
+  vtkTypeMacro(vtkIECTransformLogic, vtkObject);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   /// @brief Update GantryToFixedReference transform based on gantry angle parameter
   void UpdateGantryToFixedReferenceTransform(double gantryRotationAngleDeg);
@@ -157,25 +157,25 @@ public:
     vtkGeneralTransform* outputTransform, bool transformForBeam=false);
   //TODO: See this transformForBeam part if still needed
 
-    /// Get transform from one coordinate frame to another
-    /// @param fromFrame - start transformation from frame
-    /// @param toFrame - proceed transformation to frame
-    /// @param outputTransform - General (linear) transform matrix fromFrame -> toFrame. Matrix is correct if return flag is true.
-    /// @param transformForBeam - calculate dynamic transformation for beam model or other models
-    /// (e.g. transformation from Patient RAS frame to Collimation frame: RAS -> Patient -> TableTop -> Eccentric -> Patient Support -> Fixed reference -> Gantry -> Collimator)  //TODO: Deprecated
-    /// \return Success flag (false on any error)
-    bool GetTransformBetween(CoordinateSystemIdentifier fromFrame, CoordinateSystemIdentifier toFrame,
-                             vtkGeneralTransform* outputTransform, bool transformForBeam=false);
-    //TODO: See this transformForBeam part if still needed
+  /// Get transform from one coordinate frame to another
+  /// @param fromFrame - start transformation from frame
+  /// @param toFrame - proceed transformation to frame
+  /// @param outputTransform - General (linear) transform matrix fromFrame -> toFrame. Matrix is correct if return flag is true.
+  /// @param transformForBeam - calculate dynamic transformation for beam model or other models
+  /// (e.g. transformation from Patient RAS frame to Collimation frame: RAS -> Patient -> TableTop -> Eccentric -> Patient Support -> Fixed reference -> Gantry -> Collimator)  //TODO: Deprecated
+  /// \return Success flag (false on any error)
+  bool GetTransformBetween(CoordinateSystemIdentifier fromFrame, CoordinateSystemIdentifier toFrame,
+    vtkGeneralTransform* outputTransform, bool transformForBeam=false);
+  //TODO: See this transformForBeam part if still needed
 
-    /// @brief Get coordinate system identifiers from root system down to frame system
-    vtkTransform* GetElementaryTransformBetween(CoordinateSystemIdentifier fromFrame, CoordinateSystemIdentifier toFrame);
+  /// @brief Get coordinate system identifiers from root system down to frame system
+  vtkTransform* GetElementaryTransformBetween(CoordinateSystemIdentifier fromFrame, CoordinateSystemIdentifier toFrame);
 
 public:
-    //std::map<CoordinateSystemIdentifier, std::string> GetCoordinateSystemsMap()
-    //{
-    //  return CoordinateSystemsMap;
-    //}
+  //std::map<CoordinateSystemIdentifier, std::string> GetCoordinateSystemsMap()
+  //{
+  //  return CoordinateSystemsMap;
+  //}
 
   /// @brief Get name of transform node between two coordinate systems
   /// @return Transform node name between the specified coordinate frames.
@@ -183,10 +183,10 @@ public:
   std::string GetTransformNameBetween(CoordinateSystemIdentifier fromFrame, CoordinateSystemIdentifier toFrame);
 
 public:
-    std::vector<std::pair<CoordinateSystemIdentifier, CoordinateSystemIdentifier>> GetIECTransforms()
-    {
-        return this->IECTransforms;
-    }
+  std::vector<std::pair<CoordinateSystemIdentifier, CoordinateSystemIdentifier>> GetIECTransforms()
+  {
+    return this->IECTransforms;
+  }
 
   /// @brief Converts a vectorized index position to linear index position of a pixel in a DICOM image
   /// @param i the pixel column number
@@ -230,30 +230,30 @@ public:
   //  return CoordinateSystemsHierarchy;
   //}
 
-    //TODO: Use the frame names instead (nobody knows these variables outside)
-    //vtkGetObjectMacro(FixedReferenceToRasTransform, vtkTransform);
-    //vtkGetObjectMacro(GantryToFixedReferenceTransform, vtkTransform);
-    //vtkGetObjectMacro(CollimatorToGantryTransform, vtkTransform);
-    //vtkGetObjectMacro(WedgeFilterToCollimatorTransform, vtkTransform);
-    //vtkGetObjectMacro(AdditionalCollimatorDevicesToCollimatorTransform, vtkTransform);
-    //vtkGetObjectMacro(LeftImagingPanelToGantryTransform, vtkTransform);
-    //vtkGetObjectMacro(RightImagingPanelToGantryTransform, vtkTransform);
-    //vtkGetObjectMacro(PatientSupportRotationToFixedReferenceTransform, vtkTransform);
-    //vtkGetObjectMacro(PatientSupportToPatientSupportRotationTransform, vtkTransform);
-    //vtkGetObjectMacro(TableTopEccentricRotationToPatientSupportRotationTransform, vtkTransform);
-    //vtkGetObjectMacro(TableTopToTableTopEccentricRotationTransform, vtkTransform);
-    //vtkGetObjectMacro(PatientToTableTopTransform, vtkTransform);
-    //vtkGetObjectMacro(RasToPatientTransform, vtkTransform);
-    //vtkGetObjectMacro(FlatPanelToGantryTransform, vtkTransform);
+  //TODO: Use the frame names instead (nobody knows these variables outside)
+  //vtkGetObjectMacro(FixedReferenceToRasTransform, vtkTransform);
+  //vtkGetObjectMacro(GantryToFixedReferenceTransform, vtkTransform);
+  //vtkGetObjectMacro(CollimatorToGantryTransform, vtkTransform);
+  //vtkGetObjectMacro(WedgeFilterToCollimatorTransform, vtkTransform);
+  //vtkGetObjectMacro(AdditionalCollimatorDevicesToCollimatorTransform, vtkTransform);
+  //vtkGetObjectMacro(LeftImagingPanelToGantryTransform, vtkTransform);
+  //vtkGetObjectMacro(RightImagingPanelToGantryTransform, vtkTransform);
+  //vtkGetObjectMacro(PatientSupportRotationToFixedReferenceTransform, vtkTransform);
+  //vtkGetObjectMacro(PatientSupportToPatientSupportRotationTransform, vtkTransform);
+  //vtkGetObjectMacro(TableTopEccentricRotationToPatientSupportRotationTransform, vtkTransform);
+  //vtkGetObjectMacro(TableTopToTableTopEccentricRotationTransform, vtkTransform);
+  //vtkGetObjectMacro(PatientToTableTopTransform, vtkTransform);
+  //vtkGetObjectMacro(RasToPatientTransform, vtkTransform);
+  //vtkGetObjectMacro(FlatPanelToGantryTransform, vtkTransform);
 
 protected:
-    /// @brief Get coordinate system identifiers from frame system up to root system
-    /// Root system = FixedReference system, see IEC 61217:2011 hierarchy
-    bool GetPathToRoot(CoordinateSystemIdentifier frame, CoordinateSystemsList& path);
+  /// @brief Get coordinate system identifiers from frame system up to root system
+  /// Root system = FixedReference system, see IEC 61217:2011 hierarchy
+  bool GetPathToRoot(CoordinateSystemIdentifier frame, CoordinateSystemsList& path);
 
-    /// @brief Get coordinate system identifiers from root system down to frame system
-    /// Root system = FixedReference system, see IEC 61217:2011 hierarchy
-    bool GetPathFromRoot(CoordinateSystemIdentifier frame, CoordinateSystemsList& path);
+  /// @brief Get coordinate system identifiers from root system down to frame system
+  /// Root system = FixedReference system, see IEC 61217:2011 hierarchy
+  bool GetPathFromRoot(CoordinateSystemIdentifier frame, CoordinateSystemsList& path);
 
 protected:
   /// @brief Map from \sa CoordinateSystemIdentifier to coordinate system name. Used for getting transforms
@@ -267,43 +267,43 @@ protected:
   std::map< CoordinateSystemIdentifier, std::list< CoordinateSystemIdentifier > > CoordinateSystemsHierarchy;
 
 protected:
-    vtkNew<vtkTransform> FixedReferenceToRasTransform;
-    vtkNew<vtkTransform> GantryToFixedReferenceTransform;
-    vtkNew<vtkTransform> CollimatorToGantryTransform;
-    vtkNew<vtkTransform> WedgeFilterToCollimatorTransform;
-    vtkNew<vtkTransform> LeftImagingPanelToGantryTransform;
-    vtkNew<vtkTransform> RightImagingPanelToGantryTransform;
-    vtkNew<vtkTransform> PatientSupportRotationToFixedReferenceTransform;
-    vtkNew<vtkTransform> PatientSupportToPatientSupportRotationTransform;
-    vtkNew<vtkTransform> TableTopEccentricRotationToPatientSupportRotationTransform;
-    vtkNew<vtkTransform> TableTopToTableTopEccentricRotationTransform;
-    vtkNew<vtkTransform> PatientToTableTopTransform;
-    vtkNew<vtkTransform> RasToPatientTransform;
-    vtkNew<vtkTransform> FlatPanelToGantryTransform;
+  vtkNew<vtkTransform> FixedReferenceToRasTransform;
+  vtkNew<vtkTransform> GantryToFixedReferenceTransform;
+  vtkNew<vtkTransform> CollimatorToGantryTransform;
+  vtkNew<vtkTransform> WedgeFilterToCollimatorTransform;
+  vtkNew<vtkTransform> LeftImagingPanelToGantryTransform;
+  vtkNew<vtkTransform> RightImagingPanelToGantryTransform;
+  vtkNew<vtkTransform> PatientSupportRotationToFixedReferenceTransform;
+  vtkNew<vtkTransform> PatientSupportToPatientSupportRotationTransform;
+  vtkNew<vtkTransform> TableTopEccentricRotationToPatientSupportRotationTransform;
+  vtkNew<vtkTransform> TableTopToTableTopEccentricRotationTransform;
+  vtkNew<vtkTransform> PatientToTableTopTransform;
+  vtkNew<vtkTransform> RasToPatientTransform;
+  vtkNew<vtkTransform> FlatPanelToGantryTransform;
 
-    vtkNew<vtkTransform> GantryToFixedReferenceConcatenatedTransform;
-    vtkNew<vtkTransform> CollimatorToGantryConcatenatedTransform;
-    vtkNew<vtkTransform> WedgeFilterToCollimatorConcatenatedTransform;
-    vtkNew<vtkTransform> LeftImagingPanelToGantryConcatenatedTransform;
-    vtkNew<vtkTransform> RightImagingPanelToGantryConcatenatedTransform;
-    vtkNew<vtkTransform> FlatPanelToGantryConcatenatedTransform;
-    vtkNew<vtkTransform> PatientSupportRotationToFixedReferenceConcatenatedTransform;
-    vtkNew<vtkTransform> PatientSupportToPatientSupportRotationConcatenatedTransform;
-    vtkNew<vtkTransform> TableTopEccentricRotationToPatientSupportRotationConcatenatedTransform;
-    vtkNew<vtkTransform> TableTopToTableEccentricRotationConcatenatedTransform;
-    vtkNew<vtkTransform> PatientToTableTopConcatenatedTransform;
-    vtkNew<vtkTransform> RasToPatientConcatenatedTransform;
+  vtkNew<vtkTransform> GantryToFixedReferenceConcatenatedTransform;
+  vtkNew<vtkTransform> CollimatorToGantryConcatenatedTransform;
+  vtkNew<vtkTransform> WedgeFilterToCollimatorConcatenatedTransform;
+  vtkNew<vtkTransform> LeftImagingPanelToGantryConcatenatedTransform;
+  vtkNew<vtkTransform> RightImagingPanelToGantryConcatenatedTransform;
+  vtkNew<vtkTransform> FlatPanelToGantryConcatenatedTransform;
+  vtkNew<vtkTransform> PatientSupportRotationToFixedReferenceConcatenatedTransform;
+  vtkNew<vtkTransform> PatientSupportToPatientSupportRotationConcatenatedTransform;
+  vtkNew<vtkTransform> TableTopEccentricRotationToPatientSupportRotationConcatenatedTransform;
+  vtkNew<vtkTransform> TableTopToTableEccentricRotationConcatenatedTransform;
+  vtkNew<vtkTransform> PatientToTableTopConcatenatedTransform;
+  vtkNew<vtkTransform> RasToPatientConcatenatedTransform;
 
 protected:
-    vtkIECTransformLogic();
-    ~vtkIECTransformLogic() override;
+  vtkIECTransformLogic();
+  ~vtkIECTransformLogic() override;
 
 private:
-    vtkIECTransformLogic(const vtkIECTransformLogic&) = delete;
-    void operator=(const vtkIECTransformLogic&) = delete;
+  vtkIECTransformLogic(const vtkIECTransformLogic&) = delete;
+  void operator=(const vtkIECTransformLogic&) = delete;
 
 private:
-    std::vector<vtkTransform*> ElementaryTransforms;
+  std::vector<vtkTransform*> ElementaryTransforms;
 };
 
 #endif
