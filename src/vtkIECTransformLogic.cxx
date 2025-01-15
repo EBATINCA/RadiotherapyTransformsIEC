@@ -218,8 +218,7 @@ void vtkIECTransformLogic::UpdateWedgeFilterToCollimatorTransform(double wedgefi
 }
 
 //-----------------------------------------------------------------------------
-void vtkIECTransformLogic::UpdatePatientSupportRotationToFixedReferenceTransform(
-    double patientSupportRotationAngleDeg)
+void vtkIECTransformLogic::UpdatePatientSupportRotationToFixedReferenceTransform(double patientSupportRotationAngleDeg)
 {
   this->PatientSupportRotationToFixedReferenceTransform->Identity();
   this->PatientSupportRotationToFixedReferenceTransform->RotateZ(patientSupportRotationAngleDeg);
