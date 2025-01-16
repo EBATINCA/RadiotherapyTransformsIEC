@@ -110,6 +110,7 @@ public:
     FlatPanel,
     WedgeFilter,
     Patient,
+    PatientImagePlane,
     Imager,
     Focus,
     LastIECCoordinateFrame // Last index used for adding more coordinate systems externally
@@ -121,8 +122,8 @@ public:
   vtkTypeMacro(vtkIECTransformLogic, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent) override;
 
-  /// @brief Update GantryToFixedReference transform based on gantry angle parameter
-  void UpdateGantryToFixedReferenceTransform(double gantryRotationAngleDeg);
+  /// @brief Update GantryToFixedReference transform based on gantry rotation angle about the y-axis and gantry pitch angle about the x-axis parameter. The order of rotations is pitch rotation followed by gantry rotation
+  void UpdateGantryToFixedReferenceTransform(double gantryRotationAngleDeg,  double gantryPitchAngleDeg=0);
   /// @brief Update CollimatorToGantry transform based on collimator angle parameter and Z displacement of the collimator
   void UpdateCollimatorToGantryTransform(double collimatorRotationAngleDeg, double Bz = 0);
   /// @brief Update WedgeFilterToCollimator transform based on wedge filter angle parameter and z displacement of the wedge filter
@@ -138,13 +139,29 @@ public:
                                                           double Tz,
                                                           double TableTopPitchAngleDeg = 0,
                                                           double TableTopRollAngleDeg = 0);
-  /// @brief Update PatientSupportToFixedReference transform based on patient displacement(in X,Y,Z) and patient rotation around X(Psi), Y(Phi) and Z(Theta) parameters
+  /// @brief Update PatientToTableTop transform based on patient displacement(in X,Y,Z) and patient rotation around X(Psi), Y(Phi) and Z(Theta) parameters
   void UpdatePatientToTableTopTransform(double Px,
                                         double Py,
                                         double Pz,
                                         double PatientPsiAngleDeg = 0,
                                         double PatientPhiAngleDeg = 0,
                                         double PatientThetaAngleDeg = 0);
+  /// Update PatientImagePlaneToPatient transform based on the parameters
+  /// 1. ColumnPixelSpacing(X) and RowPixelSpacing(Y) of the  pixels in the image
+  /// 2. SliceDistance which is the spacing between each consequtive image
+  /// 3. Sx, Sy, Sz giving the displacement of the zeroth pixel position in the zeroth image from patient frame centre in the patient frame
+  /// 4. Orientation of the images around the axises X(Psi), Y(Phi) and Z(Theta) relative to the patient frame
+  ///    NOTE: the zero position of orientation corresponds to the X-pixel number increasing from the left to the right of patients, and Y-pixel number increasing from the tail of the patient to the top of the patients head
+  ///     Image slices are then stacked on top of each increasing towards the ceiling
+  void UpdatePatientImagePlaneToPatientTransform(double ColumnPixelSpacing,
+                                                 double RowPixelSpacing,
+                                                 double SliceDistance,
+                                                 double Sx,
+                                                 double Sy,
+                                                 double Sz,
+                                                 double PatientImagePlanePsiAngleDeg = 0,
+                                                 double PatientImagePlanePhiAngleDeg = 0,
+                                                 double PatientImagePlaneThetaAngleDeg = 0);
 
   /// @brief Get transform from one coordinate frame to another
   /// @param fromFrame start transformation from frame
@@ -243,6 +260,7 @@ public:
   //vtkGetObjectMacro(TableTopEccentricRotationToPatientSupportRotationTransform, vtkTransform);
   //vtkGetObjectMacro(TableTopToTableTopEccentricRotationTransform, vtkTransform);
   //vtkGetObjectMacro(PatientToTableTopTransform, vtkTransform);
+  //vtkGetObjectMacro(PatientImagePlaneToPatientTransform, vtkTransform);
   //vtkGetObjectMacro(RasToPatientTransform, vtkTransform);
   //vtkGetObjectMacro(FlatPanelToGantryTransform, vtkTransform);
 
@@ -278,6 +296,7 @@ protected:
   vtkNew<vtkTransform> TableTopEccentricRotationToPatientSupportRotationTransform;
   vtkNew<vtkTransform> TableTopToTableTopEccentricRotationTransform;
   vtkNew<vtkTransform> PatientToTableTopTransform;
+  vtkNew<vtkTransform> PatientImagePlaneToPatientTransform;
   vtkNew<vtkTransform> RasToPatientTransform;
   vtkNew<vtkTransform> FlatPanelToGantryTransform;
 
@@ -292,6 +311,7 @@ protected:
   vtkNew<vtkTransform> TableTopEccentricRotationToPatientSupportRotationConcatenatedTransform;
   vtkNew<vtkTransform> TableTopToTableEccentricRotationConcatenatedTransform;
   vtkNew<vtkTransform> PatientToTableTopConcatenatedTransform;
+  vtkNew<vtkTransform> PatientImagePlaneToPatientConcatenatedTransform;
   vtkNew<vtkTransform> RasToPatientConcatenatedTransform;
 
 protected:
