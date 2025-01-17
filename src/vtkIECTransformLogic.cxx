@@ -52,7 +52,7 @@ vtkIECTransformLogic::vtkIECTransformLogic()
   this->CoordinateSystemsMap[FlatPanel] = "FlatPanel";
   this->CoordinateSystemsMap[WedgeFilter] = "WedgeFilter";
   this->CoordinateSystemsMap[Patient] = "Patient";
-  this->CoordinateSystemsMap[PatientImagePlane] = "PatientImagePlane";
+  this->CoordinateSystemsMap[ImageRegularGrid] = "ImageRegularGrid";
 
   this->IECTransforms.clear();
   this->IECTransforms.push_back(std::make_pair(FixedReference, RAS));
@@ -66,7 +66,7 @@ vtkIECTransformLogic::vtkIECTransformLogic()
   this->IECTransforms.push_back(std::make_pair(TableTopEccentricRotation, PatientSupportRotation)); // NOTE: Currently not supported by REV
   this->IECTransforms.push_back(std::make_pair(TableTop, TableTopEccentricRotation));
   this->IECTransforms.push_back(std::make_pair(Patient, TableTop));
-  this->IECTransforms.push_back(std::make_pair(PatientImagePlane, Patient));
+  this->IECTransforms.push_back(std::make_pair(ImageRegularGrid, Patient));
   this->IECTransforms.push_back(std::make_pair(RAS, Patient));
   this->IECTransforms.push_back(std::make_pair(FlatPanel, Gantry));
 
@@ -82,7 +82,7 @@ vtkIECTransformLogic::vtkIECTransformLogic()
   this->TableTopEccentricRotationToPatientSupportRotationTransform->SetObjectName(this->GetTransformNameBetween(TableTopEccentricRotation, PatientSupportRotation).c_str());
   this->TableTopToTableTopEccentricRotationTransform->SetObjectName(this->GetTransformNameBetween(TableTop, TableTopEccentricRotation).c_str());
   this->PatientToTableTopTransform->SetObjectName(this->GetTransformNameBetween(Patient, TableTop).c_str());
-  this->PatientImagePlaneToPatientTransform->SetObjectName(this->GetTransformNameBetween(PatientImagePlane, Patient).c_str());
+  this->ImageRegularGridToPatientTransform->SetObjectName(this->GetTransformNameBetween(ImageRegularGrid, Patient).c_str());
   this->RasToPatientTransform->SetObjectName(this->GetTransformNameBetween(RAS, Patient).c_str());
   this->FlatPanelToGantryTransform->SetObjectName(this->GetTransformNameBetween(FlatPanel, Gantry).c_str());
 
@@ -98,7 +98,7 @@ vtkIECTransformLogic::vtkIECTransformLogic()
   this->ElementaryTransforms.push_back(this->TableTopEccentricRotationToPatientSupportRotationTransform);
   this->ElementaryTransforms.push_back(this->TableTopToTableTopEccentricRotationTransform);
   this->ElementaryTransforms.push_back(this->PatientToTableTopTransform);
-  this->ElementaryTransforms.push_back(this->PatientImagePlaneToPatientTransform);
+  this->ElementaryTransforms.push_back(this->ImageRegularGridToPatientTransform);
   this->ElementaryTransforms.push_back(this->RasToPatientTransform);
   this->ElementaryTransforms.push_back(this->FlatPanelToGantryTransform);
 
@@ -111,7 +111,7 @@ vtkIECTransformLogic::vtkIECTransformLogic()
   this->CoordinateSystemsHierarchy[PatientSupportRotation] = { PatientSupport, TableTopEccentricRotation };
   this->CoordinateSystemsHierarchy[TableTopEccentricRotation] = { TableTop };
   this->CoordinateSystemsHierarchy[TableTop] = { Patient };
-  this->CoordinateSystemsHierarchy[Patient] = { PatientImagePlane, RAS };
+  this->CoordinateSystemsHierarchy[Patient] = { ImageRegularGrid, RAS };
 
   //
   // Build concatenated transform hierarchy
@@ -149,8 +149,8 @@ vtkIECTransformLogic::vtkIECTransformLogic()
   this->PatientToTableTopConcatenatedTransform->Concatenate(this->TableTopToTableEccentricRotationConcatenatedTransform);
   this->PatientToTableTopConcatenatedTransform->Concatenate(this->PatientToTableTopTransform);
   
-  this->PatientImagePlaneToPatientConcatenatedTransform->Concatenate(this->PatientToTableTopConcatenatedTransform);
-  this->PatientImagePlaneToPatientConcatenatedTransform->Concatenate(this->PatientImagePlaneToPatientTransform);
+  this->ImageRegularGridToPatientConcatenatedTransform->Concatenate(this->PatientToTableTopConcatenatedTransform);
+  this->ImageRegularGridToPatientConcatenatedTransform->Concatenate(this->ImageRegularGridToPatientTransform);
 
   this->RasToPatientConcatenatedTransform->Concatenate(this->PatientToTableTopConcatenatedTransform);
   this->RasToPatientConcatenatedTransform->Concatenate(this->RasToPatientTransform);
@@ -182,7 +182,7 @@ void vtkIECTransformLogic::PrintSelf(ostream& os, vtkIndent indent)
   os << indent << "TableTopEccentricRotationToPatientSupportRotationTransform: " << this->TableTopEccentricRotationToPatientSupportRotationTransform << std::endl;
   os << indent << "TableTopToTableTopEccentricRotationTransform: " << this->TableTopToTableTopEccentricRotationTransform << std::endl;
   os << indent << "PatientToTableTopTransform: " << this->PatientToTableTopTransform << std::endl;
-  os << indent << "PatientImagePlaneToPatientTransform: " << this->PatientImagePlaneToPatientTransform << std::endl;
+  os << indent << "ImageRegularGridToPatientTransform: " << this->ImageRegularGridToPatientTransform << std::endl;
   os << indent << "RasToPatientTransform: " << this->RasToPatientTransform << std::endl;
   
   os << indent << std::endl << "Concatenated transforms:" << std::endl;
@@ -197,7 +197,7 @@ void vtkIECTransformLogic::PrintSelf(ostream& os, vtkIndent indent)
   os << indent << "TableTopEccentricRotationToPatientSupportRotationConcatenatedTransform: " << this->TableTopEccentricRotationToPatientSupportRotationConcatenatedTransform << std::endl;
   os << indent << "TableTopToTableTopEccentricRotationConcatenatedTransform: " << this->TableTopToTableEccentricRotationConcatenatedTransform << std::endl;
   os << indent << "PatientToTableTopConcatenatedTransform: " << this->PatientToTableTopConcatenatedTransform << std::endl;
-  os << indent << "PatientImagePlaneToPatientConcatenatedTransform: " << this->PatientImagePlaneToPatientConcatenatedTransform << std::endl;
+  os << indent << "ImageRegularGridToPatientConcatenatedTransform: " << this->ImageRegularGridToPatientConcatenatedTransform << std::endl;
   os << indent << "RasToPatientConcatenatedTransform: " << this->RasToPatientConcatenatedTransform << std::endl;
 }
 
@@ -272,22 +272,22 @@ void vtkIECTransformLogic::UpdatePatientToTableTopTransform(double Px,
 }
 
 //-----------------------------------------------------------------------------
-void vtkIECTransformLogic::UpdatePatientImagePlaneToPatientTransform(double ColumnPixelSpacing,
-																	 double RowPixelSpacing,
-																	 double SliceDistance,
-																	 double Sx,
-																	 double Sy,
-																	 double Sz,
-																	 double PatientImagePlanePsiAngleDeg,
-																	 double PatientImagePlanePhiAngleDeg,
-																	 double PatientImagePlaneThetaAngleDeg)
+void vtkIECTransformLogic::UpdateImageRegularGridToPatientTransform(double ColumnPixelSpacing,
+																	double RowPixelSpacing,
+																	double SliceDistance,
+																	double Sx,
+																	double Sy,
+																	double Sz,
+																	double ImageRegularGridPsiAngleDeg,
+																	double ImageRegularGridPhiAngleDeg,
+																	double ImageRegularGridThetaAngleDeg)
 {
-  this->PatientImagePlaneToPatientTransform->Identity ();
-  this->PatientImagePlaneToPatientTransform->Translate (Sx, Sy, Sz);
-  this->PatientImagePlaneToPatientTransform->Scale (ColumnPixelSpacing, RowPixelSpacing, SliceDistance);
-  this->PatientImagePlaneToPatientTransform->RotateX (PatientImagePlanePsiAngleDeg);
-  this->PatientImagePlaneToPatientTransform->RotateY (PatientImagePlanePhiAngleDeg);
-  this->PatientImagePlaneToPatientTransform->RotateZ (PatientImagePlaneThetaAngleDeg);
+  this->ImageRegularGridToPatientTransform->Identity ();
+  this->ImageRegularGridToPatientTransform->Translate (Sx, Sy, Sz);
+  this->ImageRegularGridToPatientTransform->Scale (ColumnPixelSpacing, RowPixelSpacing, SliceDistance);
+  this->ImageRegularGridToPatientTransform->RotateX (ImageRegularGridPsiAngleDeg);
+  this->ImageRegularGridToPatientTransform->RotateY (ImageRegularGridPhiAngleDeg);
+  this->ImageRegularGridToPatientTransform->RotateZ (ImageRegularGridThetaAngleDeg);
 }
 
 //-----------------------------------------------------------------------------
