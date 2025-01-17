@@ -61,6 +61,8 @@ class vtkGeneralTransform;
                  ("w")                                       ("t")
                                                                |
                                                              ("p")
+                                                               |
+                               ("pi")
 
 Legend:
   ("f") - Fixed reference system
@@ -72,6 +74,7 @@ Legend:
   ("e") - Table top eccentric rotation coordinate system
   ("t") - Table top coordinate system
   ("p") - PATIENT coordinate system
+  ("pi")- Patient image regular grid coordinate system
   ("i") - Imager coordinate system
   ("o") - Focus coordinate system
 */
@@ -110,7 +113,7 @@ public:
     FlatPanel,
     WedgeFilter,
     Patient,
-    ImageRegularGrid,
+    PatientImageRegularGrid,
     Imager,
     Focus,
     LastIECCoordinateFrame // Last index used for adding more coordinate systems externally
@@ -148,22 +151,22 @@ public:
                                         double PatientPsiAngleDeg = 0,
                                         double PatientPhiAngleDeg = 0,
                                         double PatientThetaAngleDeg = 0);
-  /// Update ImageRegularGrid transform based on the parameters
+  /// Update PatientImageRegularGrid transform based on the parameters
   /// 1. ColumnPixelSpacing(X) and RowPixelSpacing(Y) of the  pixels in the image
   /// 2. SliceDistance which is the spacing between each consequtive image
-  /// 3. Sx, Sy, Sz giving the displacement of the zeroth pixel position in the zeroth image from patient frame centre in the patient frame
-  /// 4. Orientation of the images around the axises X(Psi), Y(Phi) and Z(Theta) relative to the patient frame
-  ///    NOTE: the zero position of orientation corresponds to the X-pixel number increasing from the right to the left of the patient, and Y-pixel number increasing from the tail to head of the patient
-  ///     Image slices are stack on top of each other with slice number increasing from bottom to top
-  void UpdateImageRegularGridToPatientTransform(double ColumnPixelSpacing,
+  /// 3. Sx, Sy, Sz giving the displacement of the zeroth pixel position in the zeroth image from patient frame centre in the patient coordinate frame
+  /// 4. ImageDirectionx,ImageDirectiony,ImageDirectionz represent CT image direction vectors relative to the patient frame
+  ///    NOTE: default orientation (0,0,1) corresponds to the X-pixel number increasing from the right to the left of the patient, and Y-pixel number increasing from inferior to superior
+  ///     Image slice number increses from posterior to anterior
+  void UpdatePatientImageRegularGridToPatientTransform(double ColumnPixelSpacing,
                                                  double RowPixelSpacing,
                                                  double SliceDistance,
                                                  double Sx,
                                                  double Sy,
                                                  double Sz,
-                                                 double ImageRegularGridPsiAngleDeg = 0,
-                                                 double ImageRegularGridPhiAngleDeg = 0,
-                                                 double ImageRegularGridThetaAngleDeg = 0);
+                                                 double ImageDirectionx = 0,
+                                                 double ImageDirectiony = 0,
+                                                 double ImageDirectionz = 1);
 
   /// @brief Get transform from one coordinate frame to another
   /// @param fromFrame start transformation from frame
@@ -262,7 +265,7 @@ public:
   //vtkGetObjectMacro(TableTopEccentricRotationToPatientSupportRotationTransform, vtkTransform);
   //vtkGetObjectMacro(TableTopToTableTopEccentricRotationTransform, vtkTransform);
   //vtkGetObjectMacro(PatientToTableTopTransform, vtkTransform);
-  //vtkGetObjectMacro(ImageRegularGridToPatientTransform, vtkTransform);
+  //vtkGetObjectMacro(PatientImageRegularGridToPatientTransform, vtkTransform);
   //vtkGetObjectMacro(RasToPatientTransform, vtkTransform);
   //vtkGetObjectMacro(FlatPanelToGantryTransform, vtkTransform);
 
@@ -298,7 +301,7 @@ protected:
   vtkNew<vtkTransform> TableTopEccentricRotationToPatientSupportRotationTransform;
   vtkNew<vtkTransform> TableTopToTableTopEccentricRotationTransform;
   vtkNew<vtkTransform> PatientToTableTopTransform;
-  vtkNew<vtkTransform> ImageRegularGridToPatientTransform;
+  vtkNew<vtkTransform> PatientImageRegularGridToPatientTransform;
   vtkNew<vtkTransform> RasToPatientTransform;
   vtkNew<vtkTransform> FlatPanelToGantryTransform;
 
@@ -313,7 +316,7 @@ protected:
   vtkNew<vtkTransform> TableTopEccentricRotationToPatientSupportRotationConcatenatedTransform;
   vtkNew<vtkTransform> TableTopToTableEccentricRotationConcatenatedTransform;
   vtkNew<vtkTransform> PatientToTableTopConcatenatedTransform;
-  vtkNew<vtkTransform> ImageRegularGridToPatientConcatenatedTransform;
+  vtkNew<vtkTransform> PatientImageRegularGridToPatientConcatenatedTransform;
   vtkNew<vtkTransform> RasToPatientConcatenatedTransform;
 
 protected:
