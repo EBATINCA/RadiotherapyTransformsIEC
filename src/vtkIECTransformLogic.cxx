@@ -286,10 +286,15 @@ void vtkIECTransformLogic::UpdatePatientImageRegularGridToPatientTransform(doubl
   this->PatientImageRegularGridToPatientTransform->Translate (Sx, Sy, Sz);
   this->PatientImageRegularGridToPatientTransform->Scale (ColumnPixelSpacing, RowPixelSpacing, SliceDistance);
   
-  double rotationx = atan2(ImageDirectiony, ImageDirectionz);
-  double rotationy = atan2(ImageDirectionx, ImageDirectionz);
-  this->PatientImageRegularGridToPatientTransform->RotateX (rotationx);
-  this->PatientImageRegularGridToPatientTransform->RotateY (rotationy);
+  double M1[16] = {1, 0, 0,
+				   0, ImageDirectionz/sqrt(ImageDirectiony**2 + ImageDirectionz**2), -ImageDirectiony/sqrt(ImageDirectiony**2 + ImageDirectionz**2),
+				   0, ImageDirectiony/sqrt(ImageDirectiony**2 + ImageDirectionz**2),  ImageDirectionz/sqrt(ImageDirectiony**2 + ImageDirectionz**2)};
+
+  this->PatientImageRegularGridToPatientTransform->Concatenate (M1);
+  double M2[16] = {ImageDirectionz/sqrt(ImageDirectionx**2 + ImageDirectionz**2), 0,ImageDirectionx/sqrt(ImageDirectionx**2 + ImageDirectionz**2),
+					0,1,0,
+					-ImageDirectionx/sqrt(ImageDirectionx**2 + ImageDirectionz**2),0,ImageDirectionz/sqrt(ImageDirectionx**2 + ImageDirectionz**2)};
+  this->PatientImageRegularGridToPatientTransform->Concatenate (M2);
   
 }
 
