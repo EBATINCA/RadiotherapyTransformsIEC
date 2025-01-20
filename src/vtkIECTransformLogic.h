@@ -155,18 +155,21 @@ public:
   /// 1. ColumnPixelSpacing(X) and RowPixelSpacing(Y) of the  pixels in the image
   /// 2. SliceDistance which is the spacing between each consequtive image
   /// 3. Sx, Sy, Sz giving the displacement of the zeroth pixel position in the zeroth image from patient frame centre in the patient coordinate frame
-  /// 4. ImageDirectionx,ImageDirectiony,ImageDirectionz represent CT image direction vectors relative to the patient frame
-  ///    NOTE: default orientation (0,0,1) corresponds to the X-pixel number increasing from the right to the left of the patient, and Y-pixel number increasing from inferior to superior
-  ///     Image slice number increses from posterior to anterior
+  /// 4. DirectionCosineX,DirectionCosineY represent the row and column direction cosines of the image orientation
+  ///    NOTE: default orientation corresponds to the X-pixel number increasing from the right to the left of the patient, and Y-pixel number increasing from anterior to poserier
+  ///     Image slice number increses from inferior to superior (coorsponds to DICOM coordinate system)
   void UpdatePatientImageRegularGridToPatientTransform(double ColumnPixelSpacing,
                                                  double RowPixelSpacing,
                                                  double SliceDistance,
                                                  double Sx,
                                                  double Sy,
                                                  double Sz,
-                                                 double ImageDirectionx = 0,
-                                                 double ImageDirectiony = 0,
-                                                 double ImageDirectionz = 1);
+                                                 double DirectionCosineXx = 1,
+                                                 double DirectionCosineXy = 0,
+                                                 double DirectionCosineXz = 0,
+                                                 double DirectionCosineYx = 0,
+                                                 double DirectionCosineYy = 1,
+                                                 double DirectionCosineYz = 0);
 
   /// @brief Get transform from one coordinate frame to another
   /// @param fromFrame start transformation from frame

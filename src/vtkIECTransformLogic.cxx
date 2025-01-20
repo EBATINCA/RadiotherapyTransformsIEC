@@ -112,7 +112,19 @@ vtkIECTransformLogic::vtkIECTransformLogic()
   this->CoordinateSystemsHierarchy[TableTopEccentricRotation] = { TableTop };
   this->CoordinateSystemsHierarchy[TableTop] = { Patient };
   this->CoordinateSystemsHierarchy[Patient] = { PatientImageRegularGrid, RAS };
-
+  
+  // Build non-trivial default transformations
+  double RASToIECTransformation[16] = {-1,0,0,0,
+										0,0,1,0,
+										0,1,0,0,
+										0,0,0,1};
+  this->RasToPatientTransform->Concatenate(RASToIECTransformation);
+  double DICOMToIECTransformation[16] = {1, 0,0,0,
+										 0, 0,1,0,
+										 0,-1,0,0,
+										 0, 0,0,1};
+  this->PatientImageRegularGridToPatientTransform->Concatenate(DICOMToIECTransformation);
+  
   //
   // Build concatenated transform hierarchy
   // 
@@ -151,7 +163,6 @@ vtkIECTransformLogic::vtkIECTransformLogic()
   
   this->PatientImageRegularGridToPatientConcatenatedTransform->Concatenate(this->PatientToTableTopConcatenatedTransform);
   this->PatientImageRegularGridToPatientConcatenatedTransform->Concatenate(this->PatientImageRegularGridToPatientTransform);
-
   this->RasToPatientConcatenatedTransform->Concatenate(this->PatientToTableTopConcatenatedTransform);
   this->RasToPatientConcatenatedTransform->Concatenate(this->RasToPatientTransform);
 }
@@ -278,24 +289,29 @@ void vtkIECTransformLogic::UpdatePatientImageRegularGridToPatientTransform(doubl
 																	double Sx,
 																	double Sy,
 																	double Sz,
-																	double ImageDirectionx = 0,
-																	double ImageDirectiony = 0,
-																	double ImageDirectionz = 1)
+																	double DirectionCosineXx,
+																	double DirectionCosineXy,
+																	double DirectionCosineXz,
+																	double DirectionCosineYx,
+																	double DirectionCosineYy,
+																	double DirectionCosineYz)
 {
   this->PatientImageRegularGridToPatientTransform->Identity ();
-  this->PatientImageRegularGridToPatientTransform->Translate (Sx, Sy, Sz);
-  this->PatientImageRegularGridToPatientTransform->Scale (ColumnPixelSpacing, RowPixelSpacing, SliceDistance);
   
-  double M1[16] = {1, 0, 0,
-				   0, ImageDirectionz/sqrt(ImageDirectiony**2 + ImageDirectionz**2), -ImageDirectiony/sqrt(ImageDirectiony**2 + ImageDirectionz**2),
-				   0, ImageDirectiony/sqrt(ImageDirectiony**2 + ImageDirectionz**2),  ImageDirectionz/sqrt(ImageDirectiony**2 + ImageDirectionz**2)};
-
-  this->PatientImageRegularGridToPatientTransform->Concatenate (M1);
-  double M2[16] = {ImageDirectionz/sqrt(ImageDirectionx**2 + ImageDirectionz**2), 0,ImageDirectionx/sqrt(ImageDirectionx**2 + ImageDirectionz**2),
-					0,1,0,
-					-ImageDirectionx/sqrt(ImageDirectionx**2 + ImageDirectionz**2),0,ImageDirectionz/sqrt(ImageDirectionx**2 + ImageDirectionz**2)};
-  this->PatientImageRegularGridToPatientTransform->Concatenate (M2);
+  double DirectionCosineZx = (DirectionCosineXy*DirectionCosineYz - DirectionCosineXz*DirectionCosineYy);
+  double DirectionCosineZy = (DirectionCosineXz*DirectionCosineYx - DirectionCosineXx*DirectionCosineYz);
+  double DirectionCosineZz = (DirectionCosineXx*DirectionCosineYy - DirectionCosineXy*DirectionCosineYx);
+  double M[16] = {DirectionCosineXx*ColumnPixelSpacing, DirectionCosineYx*RowPixelSpacing, DirectionCosineZx*SliceDistance, Sx,
+				  DirectionCosineXy*ColumnPixelSpacing, DirectionCosineYy*RowPixelSpacing, DirectionCosineZy*SliceDistance, Sy,
+				  DirectionCosineXz*ColumnPixelSpacing, DirectionCosineYz*RowPixelSpacing, DirectionCosineZz*SliceDistance, Sz,
+				  0, 0, 0, 1};			   
+  this->PatientImageRegularGridToPatientTransform->Concatenate (M);
   
+  double DICOMToIECTransformation[16] = {1, 0,0,0,
+										 0, 0,1,0,
+										 0,-1,0,0,
+										 0, 0,0,1};
+  this->PatientImageRegularGridToPatientTransform->Concatenate(DICOMToIECTransformation);
 }
 
 //-----------------------------------------------------------------------------
