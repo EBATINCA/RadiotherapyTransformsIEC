@@ -111,11 +111,11 @@ vtkIECTransformLogic::vtkIECTransformLogic()
   
   // Build non-trivial default transformations
   // RAS is equivalent to rotation around x of -90deg plus rotation around z of 180deg (could be also defined as Identity + 2 Rotate statements)
-  double rASRotationMatrix[16] = {-1,0,0,0,
+  double rasRotationMatrix[16] = {-1,0,0,0,
                                    0,0,1,0,
                                    0,1,0,0,
                                    0,0,0,1};
-  this->RasToPatientTransform->Concatenate(rASRotationMatrix);
+  this->RasToPatientTransform->Concatenate(rasRotationMatrix);
   
   //
   // Build concatenated transform hierarchy
