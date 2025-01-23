@@ -62,7 +62,7 @@ class vtkGeneralTransform;
                                                                |
                                                              ("p")
                                                                |
-                               ("pi")
+                                                             ("pi")
 
 Legend:
   ("f") - Fixed reference system
@@ -129,28 +129,19 @@ public:
   /// with possibility of setting gantry pitch angle which is not part of IEC standard but a DICOM addition
   /// The order of rotations is pitch rotation followed by gantry rotation
   void UpdateGantryToFixedReferenceTransform(double gantryRotationAngleDeg,  double gantryPitchAngleDeg=0);
-  /// @brief Update CollimatorToGantry transform based on collimator angle parameter and Z displacement of the collimator
-  void UpdateCollimatorToGantryTransform(double collimatorRotationAngleDeg, double Bz = 0);
-  /// @brief Update WedgeFilterToCollimator transform based on wedge filter angle parameter and z displacement of the wedge filter
-  void UpdateWedgeFilterToCollimatorTransform(double wedgefilterRotationAngleDeg, double Wz = 0);
-  /// @brief Update PatientSupportRotrationToFixedReference transform based on patient support rotation parameter
+  /// Update CollimatorToGantry transform based on collimator angle parameter and Z displacement of the collimator
+  void UpdateCollimatorToGantryTransform(double collimatorRotationAngleDeg, double bz = 0);
+  /// Update WedgeFilterToCollimator transform based on wedge filter angle parameter and z displacement of the wedge filter
+  void UpdateWedgeFilterToCollimatorTransform(double wedgefilterRotationAngleDeg, double wz = 0);
+
+  /// Update PatientSupportRotationToFixedReference transform based on patient support rotation parameter
   void UpdatePatientSupportRotationToFixedReferenceTransform(double patientSupportRotationAngleDeg);
-  /// @brief Update TableTopEccentricRotationToPatientSupportRotation transform based on eccentric angle rotation parameter and z deplacement of the eccentric device
-  void UpdateTableTopEccentricRotationToPatientSupportRotationTransform(
-      double TableTopEccentricRotationAngleDeg, double Ey = 0);
-  /// @brief Update TableTopToTableTopEccentricRotation transform based on Table Top displacement(in X,Y,Z), Table Top pitch rotation(around X axis), and Table Top roll rotation(around Y axis) parameters
-  void UpdateTableTopToTableTopEccentricRotationTransform(double Tx,
-                                                          double Ty,
-                                                          double Tz,
-                                                          double TableTopPitchAngleDeg = 0,
-                                                          double TableTopRollAngleDeg = 0);
-  /// @brief Update PatientToTableTop transform based on patient displacement(in X,Y,Z) and patient rotation around X(Psi), Y(Phi) and Z(Theta) parameters
-  void UpdatePatientToTableTopTransform(double Px,
-                                        double Py,
-                                        double Pz,
-                                        double PatientPsiAngleDeg = 0,
-                                        double PatientPhiAngleDeg = 0,
-                                        double PatientThetaAngleDeg = 0);
+  /// Update TableTopEccentricRotationToPatientSupportRotation transform based on eccentric angle rotation parameter and z deplacement of the eccentric device
+  void UpdateTableTopEccentricRotationToPatientSupportRotationTransform(double TableTopEccentricRotationAngleDeg, double ey = 0);
+  /// Update TableTopToTableTopEccentricRotation transform based on Table Top displacement(in X,Y,Z), Table Top pitch rotation(around X axis), and Table Top roll rotation(around Y axis) parameters
+  void UpdateTableTopToTableTopEccentricRotationTransform(double tx, double ty, double tz, double tableTopPitchAngleDeg = 0, double tableTopRollAngleDeg = 0);
+  /// Update PatientToTableTop transform based on patient displacement(in X,Y,Z) and patient rotation around X(Psi), Y(Phi) and Z(Theta) parameters
+  void UpdatePatientToTableTopTransform(double px, double py, double pz, double patientPsiAngleDeg = 0, double patientPhiAngleDeg = 0, double patientThetaAngleDeg = 0);
   /// Update PatientImageRegularGrid transform based on the parameters
   /// 1. ColumnPixelSpacing(X) and RowPixelSpacing(Y) of the  pixels in the image
   /// 2. SliceDistance which is the spacing between each consequtive image
@@ -158,18 +149,9 @@ public:
   /// 4. DirectionCosineX,DirectionCosineY represent the row and column direction cosines of the image orientation
   ///    NOTE: default orientation corresponds to the X-pixel number increasing from the right to the left of the patient, and Y-pixel number increasing from anterior to poserier
   ///     Image slice number increses from inferior to superior (coorsponds to DICOM coordinate system)
-  void UpdatePatientImageRegularGridToPatientTransform(double ColumnPixelSpacing,
-                                                 double RowPixelSpacing,
-                                                 double SliceDistance,
-                                                 double Sx,
-                                                 double Sy,
-                                                 double Sz,
-                                                 double DirectionCosineXx = 1,
-                                                 double DirectionCosineXy = 0,
-                                                 double DirectionCosineXz = 0,
-                                                 double DirectionCosineYx = 0,
-                                                 double DirectionCosineYy = 1,
-                                                 double DirectionCosineYz = 0);
+  void UpdatePatientImageRegularGridToPatientTransform(double columnPixelSpacing, double rowPixelSpacing, double sliceDistance, double sx, double sy, double sz,
+                                                       double directionCosineXx = 1, double directionCosineXy = 0, double directionCosineXz = 0,
+                                                       double directionCosineYx = 0, double directionCosineYy = 1, double directionCosineYz = 0);
 
   /// @brief Get transform from one coordinate frame to another
   /// @param fromFrame start transformation from frame

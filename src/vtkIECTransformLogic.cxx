@@ -114,16 +114,16 @@ vtkIECTransformLogic::vtkIECTransformLogic()
   this->CoordinateSystemsHierarchy[Patient] = { PatientImageRegularGrid, RAS };
   
   // Build non-trivial default transformations
-  double RASToIECTransformation[16] = {-1,0,0,0,
-										0,0,1,0,
-										0,1,0,0,
-										0,0,0,1};
-  this->RasToPatientTransform->Concatenate(RASToIECTransformation);
-  double DICOMToIECTransformation[16] = {1, 0,0,0,
-										 0, 0,1,0,
-										 0,-1,0,0,
-										 0, 0,0,1};
-  this->PatientImageRegularGridToPatientTransform->Concatenate(DICOMToIECTransformation);
+  double rASToIECTransformation[16] = {-1,0,0,0,
+                                        0,0,1,0,
+                                        0,1,0,0,
+                                        0,0,0,1};
+  this->RasToPatientTransform->Concatenate(rASToIECTransformation);
+  double dICOMToIECTransformation[16] = {1, 0,0,0,
+                                         0, 0,1,0,
+                                         0,-1,0,0,
+                                         0, 0,0,1};
+  this->PatientImageRegularGridToPatientTransform->Concatenate(dICOMToIECTransformation);
   
   //
   // Build concatenated transform hierarchy
@@ -221,20 +221,18 @@ void vtkIECTransformLogic::UpdateGantryToFixedReferenceTransform(double gantryRo
 }
 
 //----------------------------------------------------------------------------
-void vtkIECTransformLogic::UpdateCollimatorToGantryTransform(double collimatorRotationAngleDeg,
-                                                             double Bz)
+void vtkIECTransformLogic::UpdateCollimatorToGantryTransform(double collimatorRotationAngleDeg, double bz)
 {
   this->CollimatorToGantryTransform->Identity();
-  this->CollimatorToGantryTransform->Translate(0, 0, Bz);
+  this->CollimatorToGantryTransform->Translate(0, 0, bz);
   this->CollimatorToGantryTransform->RotateZ(collimatorRotationAngleDeg);
 }
 
 //-----------------------------------------------------------------------------
-void vtkIECTransformLogic::UpdateWedgeFilterToCollimatorTransform(double wedgefilterRotationAngleDeg,
-                                                                  double Wz)
+void vtkIECTransformLogic::UpdateWedgeFilterToCollimatorTransform(double wedgefilterRotationAngleDeg, double wz)
 {
   this->WedgeFilterToCollimatorTransform->Identity();
-  this->WedgeFilterToCollimatorTransform->Translate(0, 0, Wz);
+  this->WedgeFilterToCollimatorTransform->Translate(0, 0, wz);
   this->WedgeFilterToCollimatorTransform->RotateZ(wedgefilterRotationAngleDeg);
 }
 
@@ -246,72 +244,53 @@ void vtkIECTransformLogic::UpdatePatientSupportRotationToFixedReferenceTransform
 }
 
 //-----------------------------------------------------------------------------
-void vtkIECTransformLogic::UpdateTableTopEccentricRotationToPatientSupportRotationTransform(
-    double TableTopEccentricRotationAngleDeg, double Ey)
+void vtkIECTransformLogic::UpdateTableTopEccentricRotationToPatientSupportRotationTransform(double tableTopEccentricRotationAngleDeg, double ey)
 {
   this->TableTopEccentricRotationToPatientSupportRotationTransform->Identity();
-  this->TableTopEccentricRotationToPatientSupportRotationTransform->Translate(0, Ey, 0);
-  this->TableTopEccentricRotationToPatientSupportRotationTransform->RotateZ(
-      TableTopEccentricRotationAngleDeg);
+  this->TableTopEccentricRotationToPatientSupportRotationTransform->Translate(0, ey, 0);
+  this->TableTopEccentricRotationToPatientSupportRotationTransform->RotateZ(tableTopEccentricRotationAngleDeg);
 }
 
 //-----------------------------------------------------------------------------
-void vtkIECTransformLogic::UpdateTableTopToTableTopEccentricRotationTransform(
-    double Tx, double Ty, double Tz, double TableTopPitchAngleDeg, double TableTopRollAngleDeg)
+void vtkIECTransformLogic::UpdateTableTopToTableTopEccentricRotationTransform(double tx, double ty, double tz, double tableTopPitchAngleDeg, double tableTopRollAngleDeg)
 {
-  this->TableTopToTableTopEccentricRotationTransform->Identity ();
-  this->TableTopToTableTopEccentricRotationTransform->Translate (Tx, Ty, Tz);
-  this->TableTopToTableTopEccentricRotationTransform->RotateX (
-      TableTopPitchAngleDeg);
-  this->TableTopToTableTopEccentricRotationTransform->RotateY (
-      TableTopRollAngleDeg);
+  this->TableTopToTableTopEccentricRotationTransform->Identity();
+  this->TableTopToTableTopEccentricRotationTransform->Translate(tx, ty, tz);
+  this->TableTopToTableTopEccentricRotationTransform->RotateX(tableTopPitchAngleDeg);
+  this->TableTopToTableTopEccentricRotationTransform->RotateY(tableTopRollAngleDeg);
 }
 
 //-----------------------------------------------------------------------------
-void vtkIECTransformLogic::UpdatePatientToTableTopTransform(double Px,
-                                                            double Py,
-                                                            double Pz,
-                                                            double PatientPsiAngleDeg,
-                                                            double PatientPhiAngleDeg,
-                                                            double PatientThetaAngleDeg)
+void vtkIECTransformLogic::UpdatePatientToTableTopTransform(double px, double py, double pz, double patientPsiAngleDeg, double patientPhiAngleDeg, double patientThetaAngleDeg)
 {
-  this->PatientToTableTopTransform->Identity ();
-  this->PatientToTableTopTransform->Translate (Px, Py, Pz);
-  this->PatientToTableTopTransform->RotateX (PatientPsiAngleDeg);
-  this->PatientToTableTopTransform->RotateY (PatientPhiAngleDeg);
-  this->PatientToTableTopTransform->RotateZ (PatientThetaAngleDeg);
+  this->PatientToTableTopTransform->Identity();
+  this->PatientToTableTopTransform->Translate(px, py, pz);
+  this->PatientToTableTopTransform->RotateX(patientPsiAngleDeg);
+  this->PatientToTableTopTransform->RotateY(patientPhiAngleDeg);
+  this->PatientToTableTopTransform->RotateZ(patientThetaAngleDeg);
 }
 
 //-----------------------------------------------------------------------------
-void vtkIECTransformLogic::UpdatePatientImageRegularGridToPatientTransform(double ColumnPixelSpacing,
-																	double RowPixelSpacing,
-																	double SliceDistance,
-																	double Sx,
-																	double Sy,
-																	double Sz,
-																	double DirectionCosineXx,
-																	double DirectionCosineXy,
-																	double DirectionCosineXz,
-																	double DirectionCosineYx,
-																	double DirectionCosineYy,
-																	double DirectionCosineYz)
+void vtkIECTransformLogic::UpdatePatientImageRegularGridToPatientTransform(double columnPixelSpacing, double rowPixelSpacing, double sliceDistance, double sx, double sy, double sz,
+                                                                           double directionCosineXx, double directionCosineXy, double directionCosineXz,
+                                                                           double directionCosineYx, double directionCosineYy, double directionCosineYz)
 {
-  this->PatientImageRegularGridToPatientTransform->Identity ();
+  this->PatientImageRegularGridToPatientTransform->Identity();
   
-  double DirectionCosineZx = (DirectionCosineXy*DirectionCosineYz - DirectionCosineXz*DirectionCosineYy);
-  double DirectionCosineZy = (DirectionCosineXz*DirectionCosineYx - DirectionCosineXx*DirectionCosineYz);
-  double DirectionCosineZz = (DirectionCosineXx*DirectionCosineYy - DirectionCosineXy*DirectionCosineYx);
-  double M[16] = {DirectionCosineXx*ColumnPixelSpacing, DirectionCosineYx*RowPixelSpacing, DirectionCosineZx*SliceDistance, Sx,
-				  DirectionCosineXy*ColumnPixelSpacing, DirectionCosineYy*RowPixelSpacing, DirectionCosineZy*SliceDistance, Sy,
-				  DirectionCosineXz*ColumnPixelSpacing, DirectionCosineYz*RowPixelSpacing, DirectionCosineZz*SliceDistance, Sz,
-				  0, 0, 0, 1};			   
-  this->PatientImageRegularGridToPatientTransform->Concatenate (M);
+  double directionCosineZx = directionCosineXy*directionCosineYz - directionCosineXz*directionCosineYy;
+  double directionCosineZy = directionCosineXz*directionCosineYx - directionCosineXx*directionCosineYz;
+  double directionCosineZz = directionCosineXx*directionCosineYy - directionCosineXy*directionCosineYx;
+  double m[16] = {directionCosineXx*columnPixelSpacing, directionCosineYx*rowPixelSpacing, directionCosineZx*sliceDistance, sx,
+                  directionCosineXy*columnPixelSpacing, directionCosineYy*rowPixelSpacing, directionCosineZy*sliceDistance, sy,
+                  directionCosineXz*columnPixelSpacing, directionCosineYz*rowPixelSpacing, directionCosineZz*sliceDistance, sz,
+                  0, 0, 0, 1};			   
+  this->PatientImageRegularGridToPatientTransform->Concatenate(m);
   
-  double DICOMToIECTransformation[16] = {1, 0,0,0,
-										 0, 0,1,0,
-										 0,-1,0,0,
-										 0, 0,0,1};
-  this->PatientImageRegularGridToPatientTransform->Concatenate(DICOMToIECTransformation);
+  double dICOMToIECTransformation[16] = {1, 0,0,0,
+                                         0, 0,1,0,
+                                         0,-1,0,0,
+                                         0, 0,0,1};
+  this->PatientImageRegularGridToPatientTransform->Concatenate(dICOMToIECTransformation);
 }
 
 //-----------------------------------------------------------------------------
