@@ -62,7 +62,9 @@ class vtkGeneralTransform;
                                                                |
                                                              ("p")
                                                                |
-                                                             ("pi")
+                                                             ("dp*")
+                                                               |
+                                                             ("pi*")
 
 Legend:
   ("f") - Fixed reference system
@@ -74,9 +76,11 @@ Legend:
   ("e") - Table top eccentric rotation coordinate system
   ("t") - Table top coordinate system
   ("p") - PATIENT coordinate system
-  ("pi")- Patient image regular grid coordinate system
+  ("dp*")-PATIENT coordinate system in DICOM
+  ("pi*")-Patient image regular grid coordinate system
   ("i") - Imager coordinate system
   ("o") - Focus coordinate system
+   "*"  - Not part of standard IEC coordinate frames
 */
 /*
  IEC Patient to DICOM Patient transformation:
@@ -113,6 +117,7 @@ public:
     FlatPanel,
     WedgeFilter,
     Patient,
+    DICOM,
     PatientImageRegularGrid,
     Imager,
     Focus,
@@ -149,9 +154,9 @@ public:
   /// 4. DirectionCosineX,DirectionCosineY represent the row and column direction cosines of the image orientation
   ///    NOTE: default orientation corresponds to the X-pixel number increasing from the right to the left of the patient, and Y-pixel number increasing from anterior to poserier
   ///     Image slice number increses from inferior to superior (coorsponds to DICOM coordinate system)
-  void UpdatePatientImageRegularGridToPatientTransform(double columnPixelSpacing, double rowPixelSpacing, double sliceDistance, double sx, double sy, double sz,
-                                                       double directionCosineXx = 1, double directionCosineXy = 0, double directionCosineXz = 0,
-                                                       double directionCosineYx = 0, double directionCosineYy = 1, double directionCosineYz = 0);
+  void UpdatePatientImageRegularGridToDICOMTransform(double columnPixelSpacing, double rowPixelSpacing, double sliceDistance, double sx, double sy, double sz,
+                                                     double directionCosineXx = 1, double directionCosineXy = 0, double directionCosineXz = 0,
+                                                     double directionCosineYx = 0, double directionCosineYy = 1, double directionCosineYz = 0);
 
   /// @brief Get transform from one coordinate frame to another
   /// @param fromFrame start transformation from frame
@@ -250,7 +255,8 @@ public:
   //vtkGetObjectMacro(TableTopEccentricRotationToPatientSupportRotationTransform, vtkTransform);
   //vtkGetObjectMacro(TableTopToTableTopEccentricRotationTransform, vtkTransform);
   //vtkGetObjectMacro(PatientToTableTopTransform, vtkTransform);
-  //vtkGetObjectMacro(PatientImageRegularGridToPatientTransform, vtkTransform);
+  //vtkGetObjectMacro(DICOMToPatientTransform, vtkTransform);
+  //vtkGetObjectMacro(PatientImageRegularGridToDICOMTransform, vtkTransform);
   //vtkGetObjectMacro(RasToPatientTransform, vtkTransform);
   //vtkGetObjectMacro(FlatPanelToGantryTransform, vtkTransform);
 
@@ -286,7 +292,8 @@ protected:
   vtkNew<vtkTransform> TableTopEccentricRotationToPatientSupportRotationTransform;
   vtkNew<vtkTransform> TableTopToTableTopEccentricRotationTransform;
   vtkNew<vtkTransform> PatientToTableTopTransform;
-  vtkNew<vtkTransform> PatientImageRegularGridToPatientTransform;
+  vtkNew<vtkTransform> DICOMToPatientTransform;
+  vtkNew<vtkTransform> PatientImageRegularGridToDICOMTransform;
   vtkNew<vtkTransform> RasToPatientTransform;
   vtkNew<vtkTransform> FlatPanelToGantryTransform;
 
@@ -301,7 +308,8 @@ protected:
   vtkNew<vtkTransform> TableTopEccentricRotationToPatientSupportRotationConcatenatedTransform;
   vtkNew<vtkTransform> TableTopToTableEccentricRotationConcatenatedTransform;
   vtkNew<vtkTransform> PatientToTableTopConcatenatedTransform;
-  vtkNew<vtkTransform> PatientImageRegularGridToPatientConcatenatedTransform;
+  vtkNew<vtkTransform> DICOMToPatientConcatenatedTransform;
+  vtkNew<vtkTransform> PatientImageRegularGridToDICOM;
   vtkNew<vtkTransform> RasToPatientConcatenatedTransform;
 
 protected:
