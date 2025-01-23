@@ -120,11 +120,11 @@ vtkIECTransformLogic::vtkIECTransformLogic()
   
   // Build non-trivial default transformations
   // DICOM is equivalent to rotation around x of 90deg 
-  double dICOMRotationMatrix[16] = {1, 0,0,0,
+  double dicomRotationMatrix[16] = {1, 0,0,0,
                                     0, 0,1,0,
                                     0,-1,0,0,
                                     0, 0,0,1};
-  this->PatientImageRegularGridToDICOM->Concatenate(dICOMRotationMatrix);
+  this->PatientImageRegularGridToDICOM->Concatenate(dicomRotationMatrix);
   
   //
   // Build concatenated transform hierarchy

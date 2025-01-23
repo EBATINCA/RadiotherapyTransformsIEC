@@ -60,11 +60,11 @@ class vtkGeneralTransform;
                    |                                           |
                  ("w")                                       ("t")
                                                                |
-                                                             ("p")
+                                                    ---------("p")
+                                                    |          |
+                                                *("ras")    *("dp")
                                                                |
-                                                             ("dp*")
-                                                               |
-                                                             ("pi*")
+                                                            *("pi")
 
 Legend:
   ("f") - Fixed reference system
@@ -75,22 +75,23 @@ Legend:
   ("s") - PATIENT SUPPORT coordinate system
   ("e") - Table top eccentric rotation coordinate system
   ("t") - Table top coordinate system
-  ("p") - PATIENT coordinate system
-  ("dp*")-PATIENT coordinate system in DICOM
-  ("pi*")-Patient image regular grid coordinate system
+  ("p") - PATIENT coordinate system (LSA)
+ *("dp")- PATIENT coordinate system in LPS (DICOM)
+ *("pi")- Patient image regular grid coordinate system
+*("ras")- PATIENT coordinate system in RAS (3D Slicer)
   ("i") - Imager coordinate system
   ("o") - Focus coordinate system
    "*"  - Not part of standard IEC coordinate frames
 */
 /*
- IEC Patient to DICOM Patient transformation:
+ IEC Patient (LSA) to LPS (DICOM) Patient transformation:
      Counter clockwise rotation around X-axis, angle = -90
 
                        1 0  0
      Rotation Matrix = 0 0 -1
                        0 1  0
 
- IEC Patient to RAS Patient transformation:
+ IEC Patient (LSA) to RAS (3D Slicer) Patient transformation:
      Counter clockwise rotation around X-axis, angle = -90
      Clockwise rotation around Z-axis, angle = 180
 
