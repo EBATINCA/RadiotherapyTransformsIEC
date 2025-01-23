@@ -108,7 +108,14 @@ vtkIECTransformLogic::vtkIECTransformLogic()
   this->CoordinateSystemsHierarchy[TableTopEccentricRotation] = { TableTop };
   this->CoordinateSystemsHierarchy[TableTop] = { Patient };
   this->CoordinateSystemsHierarchy[Patient] = { RAS };
-
+  
+  // Build non-trivial default transformations
+  double rASRotationMatrix[16] = {-1,0,0,0,
+                                   0,0,1,0,
+                                   0,1,0,0,
+                                   0,0,0,1};
+  this->RasToPatientTransform->Concatenate(rASRotationMatrix);
+  
   //
   // Build concatenated transform hierarchy
   // 
