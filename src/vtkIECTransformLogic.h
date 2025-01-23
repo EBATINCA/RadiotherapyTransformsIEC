@@ -47,7 +47,7 @@ class vtkGeneralTransform;
 /// RT beam node to get the geometrical parameters defining the state of the objects involved.
 /// Image describing these coordinate frames:
 /// https://github.com/SlicerRt/SlicerRtDoc/blob/master/technical/IEC%2061217-2002_CoordinateSystemsDiagram_HiRes.png
-///
+/// The RAS coordinate system is not part of IEC but we leave it here as a helper function since it's used e.g. in Slicer https://slicer.readthedocs.io/en/latest/user_guide/coordinate_systems.html
 
 /*
                           "IEC 61217:2011 Hierarchy"
