@@ -38,7 +38,6 @@
 
 class vtkGeneralTransform;
 
-/// @ingroup SlicerRt_QtModules_Beams
 /// @brief Logic representing the IEC standard coordinate systems and transforms.
 ///
 /// The IEC standard describes coordinate systems and a transform hierarchy to
