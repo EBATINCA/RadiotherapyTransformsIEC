@@ -29,6 +29,8 @@
 #include <map>
 #include <vector>
 #include <list>
+#include <cstdint>
+#include <array>
 
 // VTK includes
 #include <vtkNew.h>
@@ -36,8 +38,7 @@
 
 class vtkGeneralTransform;
 
-/// \ingroup SlicerRt_QtModules_Beams
-/// \brief Logic representing the IEC standard coordinate systems and transforms.
+/// @brief Logic representing the IEC standard coordinate systems and transforms.
 ///
 /// The IEC standard describes coordinate systems and a transform hierarchy to
 /// represent objects taking part in an external beam radiation therapy delivery in 3D space.
@@ -76,17 +77,17 @@ Legend:
 */
 /*
  IEC Patient to DICOM Patient transformation:
-     Counter clockwise rotation around X-axis, angle = -90 
+     Counter clockwise rotation around X-axis, angle = -90
 
-                       1 0  0 
+                       1 0  0
      Rotation Matrix = 0 0 -1
                        0 1  0
 
  IEC Patient to RAS Patient transformation:
-     Counter clockwise rotation around X-axis, angle = -90 
-     Clockwise rotation around Z-axis, angle = 180 
+     Counter clockwise rotation around X-axis, angle = -90
+     Clockwise rotation around Z-axis, angle = 180
 
-                       -1 0 0 
+                       -1 0 0
      Rotation Matrix =  0 0 1
                         0 1 0
 */
@@ -120,20 +121,20 @@ public:
   vtkTypeMacro(vtkIECTransformLogic, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent) override;
 
-  /// Update GantryToFixedReference transform based on gantry angle parameter
+  /// @brief Update GantryToFixedReference transform based on gantry angle parameter
   void UpdateGantryToFixedReferenceTransform(double gantryRotationAngleDeg);
-  /// Update CollimatorToGantry transform based on collimator angle parameter
+  /// @brief Update CollimatorToGantry transform based on collimator angle parameter
   void UpdateCollimatorToGantryTransform(double collimatorRotationAngleDeg);
-  /// Update PatientSupportRotrationToFixedReference transform based on patient support rotation parameter
+  /// @brief Update PatientSupportRotrationToFixedReference transform based on patient support rotation parameter
   void UpdatePatientSupportRotationToFixedReferenceTransform(double patientSupportRotationAngleDeg);
 
-  /// Get transform from one coordinate frame to another
-  /// @param fromFrame - start transformation from frame
-  /// @param toFrame - proceed transformation to frame
-  /// @param outputTransform - General (linear) transform matrix fromFrame -> toFrame. Matrix is correct if return flag is true.  
-  /// @param transformForBeam - calculate dynamic transformation for beam model or other models
+  /// @brief Get transform from one coordinate frame to another
+  /// @param fromFrame start transformation from frame
+  /// @param toFrame proceed transformation to frame
+  /// @param outputTransform General (linear) transform matrix fromFrame -> toFrame. Matrix is correct if return flag is true.
+  /// @param transformForBeam calculate dynamic transformation for beam model or other models
   /// (e.g. transformation from Patient RAS frame to Collimation frame: RAS -> Patient -> TableTop -> Eccentric -> Patient Support -> Fixed reference -> Gantry -> Collimator)  //TODO: Deprecated
-  /// \return Success flag (false on any error)
+  /// @return Success flag (false on any error)
   bool GetTransformBetween(CoordinateSystemIdentifier fromFrame, CoordinateSystemIdentifier toFrame,
     vtkGeneralTransform* outputTransform, bool transformForBeam=false);
   //TODO: See this transformForBeam part if still needed
@@ -147,15 +148,52 @@ public:
   //  return CoordinateSystemsMap;
   //}
 
-  /// Get name of transform node between two coordinate systems
-  /// \return Transform node name between the specified coordinate frames.
-  ///   Note: If IEC does not specify a transform between the given coordinate frames, then there will be no node with the returned name.
+  /// @brief Get name of transform node between two coordinate systems
+  /// @return Transform node name between the specified coordinate frames.
+  /// @note If IEC does not specify a transform between the given coordinate frames, then there will be no node with the returned name.
   std::string GetTransformNameBetween(CoordinateSystemIdentifier fromFrame, CoordinateSystemIdentifier toFrame);
 
 public:
   std::vector<std::pair<CoordinateSystemIdentifier, CoordinateSystemIdentifier>> GetIECTransforms()
   {
     return this->IECTransforms;
+  }
+
+  /// @brief Converts a vectorized index position to linear index position of a pixel in a DICOM image
+  /// @param i the pixel column number
+  /// @param j the pixel row number
+  /// @param k the image slice number
+  /// @param nI number of columns per image
+  /// @param nJ number of rows per image
+  /// @param nK number of image slices
+  /// @return The linearised pixel index as a single int
+  /// @note This algorithm uses row-major ordering to calculate indices, as is the case with DICOM images
+  static inline uint64_t VectorizedToLinearizedImageIndex(const uint16_t i, const uint16_t j , const uint16_t k, const uint16_t nI, const uint16_t nJ, const uint16_t nK)
+  {
+    if(i >= nI || j>= nJ || k >= nK)
+    {
+      throw std::runtime_error("Indices (" + std::to_string(i) + "," + std::to_string(j) + "," + std::to_string(k) + ") out of range (" + std::to_string(nI) + "," + std::to_string(nJ) + "," + std::to_string(nK) + ")" );
+    }
+    return static_cast<uint64_t>(k)*nI*nJ + static_cast<uint64_t>(j)*nI + static_cast<uint64_t>(i);
+  }
+
+  /// @brief Converts a linear index position to a vectorized index position of a pixel in an DICOM image
+  /// @param linearizedindex the linear index to be converted
+  /// @param nI number of columns per image
+  /// @param nJ number of rows per image
+  /// @param nK number of image slices
+  /// @return A 3 component array consisting of (pixel column number (i), pixel row number(j), image slice number (k))
+  /// @note This algorithm uses row-major ordering to calculate indices, as is the case with DICOM images
+  static inline std::array<uint16_t, 3> LinearizedToVectorizedIndex(const uint64_t linearizedIndex, const uint16_t nI, const uint16_t nJ, const uint16_t nK)
+  {
+    if(linearizedIndex >= nI*nJ*nK)
+    {
+      throw std::runtime_error("Index (" + std::to_string(linearizedIndex) + ") out of range (In*nJ*nK = " + std::to_string(nI*nJ*nK) + ")" );
+    }
+    const uint16_t i = static_cast<uint16_t>( linearizedIndex%nI);
+    const uint16_t j = static_cast<uint16_t>((linearizedIndex/nI)%nJ);
+    const uint16_t k = static_cast<uint16_t>((linearizedIndex/nI)/nJ);
+    return std::array<uint16_t,3>{i, j, k};
   }
 
   //std::map<CoordinateSystemIdentifier, std::list<CoordinateSystemIdentifier>> GetCoordinateSystemsHierarchy()
@@ -189,14 +227,14 @@ protected:
   bool GetPathFromRoot(CoordinateSystemIdentifier frame, CoordinateSystemsList& path);
 
 protected:
-  /// Map from \sa CoordinateSystemIdentifier to coordinate system name. Used for getting transforms
+  /// @brief Map from \sa CoordinateSystemIdentifier to coordinate system name. Used for getting transforms
   std::map<CoordinateSystemIdentifier, std::string> CoordinateSystemsMap;
 
-  /// List of IEC transforms
+  /// @brief List of IEC transforms
   std::vector< std::pair<CoordinateSystemIdentifier, CoordinateSystemIdentifier> > IECTransforms;
 
-  // TODO: for hierarchy use tree with nodes, something like graph
-  /// Map of IEC coordinate systems hierarchy
+  /// @todo for hierarchy use tree with nodes, something like graph
+  /// @brief Map of IEC coordinate systems hierarchy
   std::map< CoordinateSystemIdentifier, std::list< CoordinateSystemIdentifier > > CoordinateSystemsHierarchy;
 
 protected:
