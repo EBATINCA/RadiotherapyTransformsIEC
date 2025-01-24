@@ -110,7 +110,7 @@ vtkIECTransformLogic::vtkIECTransformLogic()
   this->CoordinateSystemsHierarchy[Patient] = { RAS };
 
   // Build transformations that are not identity by default
-  // RAS is equivalent to rotation around x of -90deg plus rotation around z of 180deg (could be also defined as Identity + 2 Rotate statements)
+  // RAS 2 IEC is equivalent to rotation around x of -90deg plus rotation around z of 180deg (could be also defined as Identity + 2 Rotate statements)
   double rasToPatientTransformationMatrix[16] = {-1,0,0,0,
                                                   0,0,1,0,
                                                   0,1,0,0,
