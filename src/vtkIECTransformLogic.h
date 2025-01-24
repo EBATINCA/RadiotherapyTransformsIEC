@@ -189,9 +189,9 @@ public:
     {
     	throw std::runtime_error("Indices out of range");
     }
-    uint16_t i = static_cast<uint16_t>( linearizedIndex%nI);
-    uint16_t j = static_cast<uint16_t>((linearizedIndex/nI)%nJ);
-    uint16_t k = static_cast<uint16_t>((linearizedIndex/nI)/nJ);
+    const uint16_t i = static_cast<uint16_t>( linearizedIndex%nI);
+    const uint16_t j = static_cast<uint16_t>((linearizedIndex/nI)%nJ);
+    const uint16_t k = static_cast<uint16_t>((linearizedIndex/nI)/nJ);
     return std::array<uint16_t,3>{i, j, k};
   }
   
