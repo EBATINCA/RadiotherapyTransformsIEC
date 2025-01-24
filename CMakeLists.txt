@@ -54,6 +54,12 @@ if(NOT DEFINED vtkIECTransformLogic_LAUNCH_COMMAND)
   set(vtkIECTransformLogic_LAUNCH_COMMAND "" CACHE STRING "Command for setting up environment and running executables")
 endif()
 
+option(vtkIECTransformLogic_DOCUMENTATION "Enable the building of the vtkIECTransformLogic documentation via doxygen." OFF)
+
+if (vtkIECTransformLogic_DOCUMENTATION)
+  add_subdirectory(Docs)
+endif()
+
 # --------------------------------------------------------------------------
 # Configure headers
 # --------------------------------------------------------------------------
