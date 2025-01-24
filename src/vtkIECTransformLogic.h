@@ -281,29 +281,6 @@ protected:
   /// @brief Map of IEC coordinate systems hierarchy
   std::map< CoordinateSystemIdentifier, std::list< CoordinateSystemIdentifier > > CoordinateSystemsHierarchy;
 
-
-  static inline  int VectorizedToLinearizedImageIndex(int i, int j , int k, int numberOfImageColumns, int numberOfImageRows, int numberOfImageSlices)
-  {
-    if(i >= numberOfImageColumns || j>= numberOfImageRows || k >= numberOfImageSlices)
-    {
-    	throw std::runtime_error("Indices out of range");
-    }
-    return k*numberOfImageColumns*numberOfImageRows + j*numberOfImageColumns + i;
-  }
-
-  static inline std::array<int, 3> LinearizedtoVectorizedIndex(int linearizedIndex, int numberOfImageColumns, int numberOfImageRows, int numberOfImageSlices)
-  {
-    if(linearizedIndex >= numberOfImageColumns*numberOfImageRows*numberOfImageSlices)
-    {
-    	throw std::runtime_error("Indices out of range");
-    }
-    int i =  linearizedIndex%numberOfImageColumns;
-    int j = (linearizedIndex/numberOfImageColumns)%numberOfImageRows;
-    int k = (linearizedIndex/numberOfImageColumns)/numberOfImageRows;
-    return std::array<int,3>{i,j,k};
-  }
-
-
 protected:
   vtkNew<vtkTransform> FixedReferenceToRasTransform;
   vtkNew<vtkTransform> GantryToFixedReferenceTransform;
