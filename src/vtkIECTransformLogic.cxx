@@ -124,7 +124,7 @@ vtkIECTransformLogic::vtkIECTransformLogic()
                                     0, 0,1,0,
                                     0,-1,0,0,
                                     0, 0,0,1};
-  this->PatientImageRegularGridToDICOM->Concatenate(dicomRotationMatrix);
+  this->DICOMToPatientTransform->Concatenate(dicomRotationMatrix);
   
   //
   // Build concatenated transform hierarchy
