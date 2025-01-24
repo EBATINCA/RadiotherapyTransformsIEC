@@ -178,9 +178,9 @@ public:
 
   /// Converts a linear index position to a vectorized index position of a pixel in an DICOM image
   /// @param linearizedindex - the linear index to be converted 
-  /// @param nI - number of columns per image 
-  /// @param nJ - number of rows per image
-  /// @param nK - number of image slices 
+  /// @param nI number of columns per image 
+  /// @param nJ number of rows per image
+  /// @param nK number of image slices 
   ///  \return A 3 component array consisting of (pixel column number (i), pixel row number(j), image slice number (k))
   ///      NOTE: This algorithm uses row-major ordering to calculate indices
   static inline std::array<uint16_t, 3> LinearizedToVectorizedIndex(uint64_t linearizedIndex, uint16_t nI, uint16_t nJ, uint16_t nK)
