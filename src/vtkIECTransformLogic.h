@@ -157,7 +157,27 @@ public:
   {
     return this->IECTransforms;
   }
+  
+  static inline  uint64_t VectorizedToLinearizedImageIndex(uint16_t i, uint16_t j , uint16_t k, uint16_t numberOfImageColumns, uint16_t numberOfImageRows, uint16_t numberOfImageSlices)
+  {
+    if(i >= numberOfImageColumns || j>= numberOfImageRows || k >= numberOfImageSlices)
+    {
+    	throw std::runtime_error("Indices out of range");
+    }
+    return static_cast<uint64_t>(k)*numberOfImageColumns*numberOfImageRows + static_cast<uint64_t>(j)*numberOfImageColumns + static_cast<uint64_t>(i);
+  }
 
+  static inline std::array<uint16_t, 3> LinearizedToVectorizedIndex(uint64_t linearizedIndex, uint16_t numberOfImageColumns, uint16_t numberOfImageRows, uint16_t numberOfImageSlices)
+  {
+    if(linearizedIndex >= numberOfImageColumns*numberOfImageRows*numberOfImageSlices)
+    {
+    	throw std::runtime_error("Indices out of range");
+    }
+    uint16_t i = static_cast<uint16_t>( linearizedIndex%numberOfImageColumns);
+    uint16_t j = static_cast<uint16_t>((linearizedIndex/numberOfImageColumns)%numberOfImageRows);
+    uint16_t k = static_cast<uint16_t>((linearizedIndex/numberOfImageColumns)/numberOfImageRows);
+    return std::array<uint16_t,3>{i,j,k};
+  }
   //std::map<CoordinateSystemIdentifier, std::list<CoordinateSystemIdentifier>> GetCoordinateSystemsHierarchy()
   //{
   //  return CoordinateSystemsHierarchy;
