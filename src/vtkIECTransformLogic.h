@@ -172,7 +172,7 @@ public:
   {
     if(i >= nI || j>= nJ || k >= nK)
     {
-    	throw std::runtime_error("Indices (" std::to_string(i) "," std::to_string(j) "," std::to_string(k) ") out of range (" std::to_string(nI) "," std::to_string(nJ) "," std::to_string(nK) ")" );
+    	throw std::runtime_error("Indices (" + std::to_string(i) + "," + std::to_string(j) + "," + std::to_string(k) + ") out of range (" + std::to_string(nI) + "," + std::to_string(nJ) + "," + std::to_string(nK) + ")" );
     }
     return static_cast<uint64_t>(k)*nI*nJ + static_cast<uint64_t>(j)*nI + static_cast<uint64_t>(i);
   }
@@ -188,7 +188,7 @@ public:
   {
     if(linearizedIndex >= nI*nJ*nK)
     {
-    	throw std::runtime_error("Index (" std::to_string(linearizedIndex) ") out of range (In*nJ*nK = " std::to_string(nI*nJ*nK) ")" );
+    	throw std::runtime_error("Index (" + std::to_string(linearizedIndex) + ") out of range (In*nJ*nK = " + std::to_string(nI*nJ*nK) + ")" );
     }
     const uint16_t i = static_cast<uint16_t>( linearizedIndex%nI);
     const uint16_t j = static_cast<uint16_t>((linearizedIndex/nI)%nJ);
