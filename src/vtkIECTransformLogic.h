@@ -77,17 +77,17 @@ Legend:
 */
 /*
  IEC Patient to DICOM Patient transformation:
-     Counter clockwise rotation around X-axis, angle = -90 
+     Counter clockwise rotation around X-axis, angle = -90
 
-                       1 0  0 
+                       1 0  0
      Rotation Matrix = 0 0 -1
                        0 1  0
 
  IEC Patient to RAS Patient transformation:
-     Counter clockwise rotation around X-axis, angle = -90 
-     Clockwise rotation around Z-axis, angle = 180 
+     Counter clockwise rotation around X-axis, angle = -90
+     Clockwise rotation around Z-axis, angle = 180
 
-                       -1 0 0 
+                       -1 0 0
      Rotation Matrix =  0 0 1
                         0 1 0
 */
@@ -131,7 +131,7 @@ public:
   /// @brief Get transform from one coordinate frame to another
   /// @param fromFrame start transformation from frame
   /// @param toFrame proceed transformation to frame
-  /// @param outputTransform General (linear) transform matrix fromFrame -> toFrame. Matrix is correct if return flag is true.  
+  /// @param outputTransform General (linear) transform matrix fromFrame -> toFrame. Matrix is correct if return flag is true.
   /// @param transformForBeam calculate dynamic transformation for beam model or other models
   /// (e.g. transformation from Patient RAS frame to Collimation frame: RAS -> Patient -> TableTop -> Eccentric -> Patient Support -> Fixed reference -> Gantry -> Collimator)  //TODO: Deprecated
   /// @return Success flag (false on any error)
@@ -158,14 +158,14 @@ public:
   {
     return this->IECTransforms;
   }
-  
+
   /// @brief Converts a vectorized index position to linear index position of a pixel in a DICOM image
-  /// @param i the pixel column number 
+  /// @param i the pixel column number
   /// @param j the pixel row number
-  /// @param k the image slice number 
-  /// @param nI number of columns per image 
+  /// @param k the image slice number
+  /// @param nI number of columns per image
   /// @param nJ number of rows per image
-  /// @param nK number of image slices 
+  /// @param nK number of image slices
   /// @return The linearised pixel index as a single int
   /// @note This algorithm uses row-major ordering to calculate indices, as is the case with DICOM images
   static inline uint64_t VectorizedToLinearizedImageIndex(const uint16_t i, const uint16_t j , const uint16_t k, const uint16_t nI, const uint16_t nJ, const uint16_t nK)
@@ -178,10 +178,10 @@ public:
   }
 
   /// @brief Converts a linear index position to a vectorized index position of a pixel in an DICOM image
-  /// @param linearizedindex the linear index to be converted 
-  /// @param nI number of columns per image 
+  /// @param linearizedindex the linear index to be converted
+  /// @param nI number of columns per image
   /// @param nJ number of rows per image
-  /// @param nK number of image slices 
+  /// @param nK number of image slices
   /// @return A 3 component array consisting of (pixel column number (i), pixel row number(j), image slice number (k))
   /// @note This algorithm uses row-major ordering to calculate indices, as is the case with DICOM images
   static inline std::array<uint16_t, 3> LinearizedToVectorizedIndex(const uint64_t linearizedIndex, const uint16_t nI, const uint16_t nJ, const uint16_t nK)
@@ -195,7 +195,7 @@ public:
     const uint16_t k = static_cast<uint16_t>((linearizedIndex/nI)/nJ);
     return std::array<uint16_t,3>{i, j, k};
   }
-  
+
   //std::map<CoordinateSystemIdentifier, std::list<CoordinateSystemIdentifier>> GetCoordinateSystemsHierarchy()
   //{
   //  return CoordinateSystemsHierarchy;
