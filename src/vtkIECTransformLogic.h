@@ -171,7 +171,7 @@ public:
   {
     if(i >= nI || j>= nJ || k >= nK)
     {
-    	throw std::runtime_error("Indices out of range");
+    	throw std::runtime_error("Indices (" std::to_string(i) "," std::to_string(j) "," std::to_string(k) ") out of range (" std::to_string(nI) "," std::to_string(nJ) "," std::to_string(nK) ")" );
     }
     return static_cast<uint64_t>(k)*nI*nJ + static_cast<uint64_t>(j)*nI + static_cast<uint64_t>(i);
   }
