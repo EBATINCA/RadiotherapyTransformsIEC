@@ -178,7 +178,7 @@ public:
   }
 
   /// @brief Converts a linear index position to a vectorized index position of a pixel in an DICOM image
-  /// @param linearizedindex the linear index to be converted
+  /// @param linearizedIndex the linear index to be converted
   /// @param nI number of columns per image
   /// @param nJ number of rows per image
   /// @param nK number of image slices
