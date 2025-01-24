@@ -158,26 +158,43 @@ public:
     return this->IECTransforms;
   }
   
-  static inline  uint64_t VectorizedToLinearizedImageIndex(uint16_t i, uint16_t j , uint16_t k, uint16_t numberOfImageColumns, uint16_t numberOfImageRows, uint16_t numberOfImageSlices)
+  /// Converts a vectorized index position to linear index position of a pixel in a DICOM image
+  /// @param i - the pixel column number 
+  /// @param j - the pixel row number
+  /// @param k - the image slice number 
+  /// @param nI - number of columns per image 
+  /// @param nJ - number of rows per image
+  /// @param nK - number of image slices 
+  /// \return The linearised pixel index as a single int
+  ///      NOTE: This algorithm uses row-major ordering to calculate indices
+  static inline uint64_t VectorizedToLinearizedImageIndex(uint16_t i, uint16_t j , uint16_t k, uint16_t nI, uint16_t nJ, uint16_t nK)
   {
-    if(i >= numberOfImageColumns || j>= numberOfImageRows || k >= numberOfImageSlices)
+    if(i >= nI || j>= nJ || k >= nK)
     {
     	throw std::runtime_error("Indices out of range");
     }
-    return static_cast<uint64_t>(k)*numberOfImageColumns*numberOfImageRows + static_cast<uint64_t>(j)*numberOfImageColumns + static_cast<uint64_t>(i);
+    return static_cast<uint64_t>(k)*nI*nJ + static_cast<uint64_t>(j)*nI + static_cast<uint64_t>(i);
   }
 
-  static inline std::array<uint16_t, 3> LinearizedToVectorizedIndex(uint64_t linearizedIndex, uint16_t numberOfImageColumns, uint16_t numberOfImageRows, uint16_t numberOfImageSlices)
+  /// Converts a linear index position to a vectorized index position of a pixel in an DICOM image
+  /// @param linearizedindex - the linear index to be converted 
+  /// @param nI - number of columns per image 
+  /// @param nJ - number of rows per image
+  /// @param nK - number of image slices 
+  ///  \return A 3 component array consisting of (pixel column number (i), pixel row number(j), image slice number (k))
+  ///      NOTE: This algorithm uses row-major ordering to calculate indices
+  static inline std::array<uint16_t, 3> LinearizedToVectorizedIndex(uint64_t linearizedIndex, uint16_t nI, uint16_t nJ, uint16_t nK)
   {
-    if(linearizedIndex >= numberOfImageColumns*numberOfImageRows*numberOfImageSlices)
+    if(linearizedIndex >= nI*nJ*nK)
     {
     	throw std::runtime_error("Indices out of range");
     }
-    uint16_t i = static_cast<uint16_t>( linearizedIndex%numberOfImageColumns);
-    uint16_t j = static_cast<uint16_t>((linearizedIndex/numberOfImageColumns)%numberOfImageRows);
-    uint16_t k = static_cast<uint16_t>((linearizedIndex/numberOfImageColumns)/numberOfImageRows);
-    return std::array<uint16_t,3>{i,j,k};
+    uint16_t i = static_cast<uint16_t>( linearizedIndex%nI);
+    uint16_t j = static_cast<uint16_t>((linearizedIndex/nI)%nJ);
+    uint16_t k = static_cast<uint16_t>((linearizedIndex/nI)/nJ);
+    return std::array<uint16_t,3>{i, j, k};
   }
+  
   //std::map<CoordinateSystemIdentifier, std::list<CoordinateSystemIdentifier>> GetCoordinateSystemsHierarchy()
   //{
   //  return CoordinateSystemsHierarchy;
