@@ -183,7 +183,7 @@ public:
   /// @param nK number of image slices 
   ///  \return A 3 component array consisting of (pixel column number (i), pixel row number(j), image slice number (k))
   ///      NOTE: This algorithm uses row-major ordering to calculate indices
-  static inline std::array<uint16_t, 3> LinearizedToVectorizedIndex(uint64_t linearizedIndex, uint16_t nI, uint16_t nJ, uint16_t nK)
+  static inline std::array<uint16_t, 3> LinearizedToVectorizedIndex(const uint64_t linearizedIndex, const uint16_t nI, const uint16_t nJ, const uint16_t nK)
   {
     if(linearizedIndex >= nI*nJ*nK)
     {
