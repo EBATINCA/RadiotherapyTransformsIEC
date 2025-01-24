@@ -108,18 +108,18 @@ vtkIECTransformLogic::vtkIECTransformLogic()
   this->CoordinateSystemsHierarchy[TableTopEccentricRotation] = { TableTop };
   this->CoordinateSystemsHierarchy[TableTop] = { Patient };
   this->CoordinateSystemsHierarchy[Patient] = { RAS };
-  
-  // Build non-trivial default transformations
+
+  // Build transformations that are not identity by default
   // RAS is equivalent to rotation around x of -90deg plus rotation around z of 180deg (could be also defined as Identity + 2 Rotate statements)
-  double rasRotationMatrix[16] = {-1,0,0,0,
-                                   0,0,1,0,
-                                   0,1,0,0,
-                                   0,0,0,1};
-  this->RasToPatientTransform->Concatenate(rasRotationMatrix);
-  
+  double rasToPatientTransformationMatrix[16] = {-1,0,0,0,
+                                                  0,0,1,0,
+                                                  0,1,0,0,
+                                                  0,0,0,1};
+  this->RasToPatientTransform->Concatenate(rasToPatientTransformationMatrix);
+
   //
   // Build concatenated transform hierarchy
-  // 
+  //
   this->GantryToFixedReferenceConcatenatedTransform->Concatenate(this->FixedReferenceToRasTransform);
   this->GantryToFixedReferenceConcatenatedTransform->Concatenate(this->GantryToFixedReferenceTransform);
 
@@ -128,7 +128,7 @@ vtkIECTransformLogic::vtkIECTransformLogic()
 
   this->WedgeFilterToCollimatorConcatenatedTransform->Concatenate(this->CollimatorToGantryConcatenatedTransform);
   this->WedgeFilterToCollimatorConcatenatedTransform->Concatenate(this->WedgeFilterToCollimatorTransform);
-    
+
   this->LeftImagingPanelToGantryConcatenatedTransform->Concatenate(this->CollimatorToGantryConcatenatedTransform);
   this->LeftImagingPanelToGantryConcatenatedTransform->Concatenate(this->LeftImagingPanelToGantryTransform);
 
@@ -184,7 +184,7 @@ void vtkIECTransformLogic::PrintSelf(ostream& os, vtkIndent indent)
   os << indent << "TableTopToTableTopEccentricRotationTransform: " << this->TableTopToTableTopEccentricRotationTransform << std::endl;
   os << indent << "PatientToTableTopTransform: " << this->PatientToTableTopTransform << std::endl;
   os << indent << "RasToPatientTransform: " << this->RasToPatientTransform << std::endl;
-  
+
   os << indent << std::endl << "Concatenated transforms:" << std::endl;
   os << indent << "GantryToFixedReferenceConcatenatedTransform: " << this->GantryToFixedReferenceConcatenatedTransform << std::endl;
   os << indent << "CollimatorToGantryConcatenatedTransform: " << this->CollimatorToGantryConcatenatedTransform << std::endl;
