@@ -128,10 +128,10 @@ public:
   void UpdatePatientSupportRotationToFixedReferenceTransform(double patientSupportRotationAngleDeg);
 
   /// Get transform from one coordinate frame to another
-  /// @param fromFrame - start transformation from frame
-  /// @param toFrame - proceed transformation to frame
-  /// @param outputTransform - General (linear) transform matrix fromFrame -> toFrame. Matrix is correct if return flag is true.  
-  /// @param transformForBeam - calculate dynamic transformation for beam model or other models
+  /// @param fromFrame start transformation from frame
+  /// @param toFrame proceed transformation to frame
+  /// @param outputTransform General (linear) transform matrix fromFrame -> toFrame. Matrix is correct if return flag is true.  
+  /// @param transformForBeam calculate dynamic transformation for beam model or other models
   /// (e.g. transformation from Patient RAS frame to Collimation frame: RAS -> Patient -> TableTop -> Eccentric -> Patient Support -> Fixed reference -> Gantry -> Collimator)  //TODO: Deprecated
   /// \return Success flag (false on any error)
   bool GetTransformBetween(CoordinateSystemIdentifier fromFrame, CoordinateSystemIdentifier toFrame,
@@ -159,14 +159,14 @@ public:
   }
   
   /// Converts a vectorized index position to linear index position of a pixel in a DICOM image
-  /// @param i - the pixel column number 
-  /// @param j - the pixel row number
-  /// @param k - the image slice number 
-  /// @param nI - number of columns per image 
-  /// @param nJ - number of rows per image
-  /// @param nK - number of image slices 
+  /// @param i the pixel column number 
+  /// @param j the pixel row number
+  /// @param k the image slice number 
+  /// @param nI number of columns per image 
+  /// @param nJ number of rows per image
+  /// @param nK number of image slices 
   /// \return The linearised pixel index as a single int
-  ///      NOTE: This algorithm uses row-major ordering to calculate indices
+  /// @note This algorithm uses row-major ordering to calculate indices, as is the case with DICOM images
   static inline uint64_t VectorizedToLinearizedImageIndex(uint16_t i, uint16_t j , uint16_t k, uint16_t nI, uint16_t nJ, uint16_t nK)
   {
     if(i >= nI || j>= nJ || k >= nK)
@@ -181,8 +181,8 @@ public:
   /// @param nI number of columns per image 
   /// @param nJ number of rows per image
   /// @param nK number of image slices 
-  ///  \return A 3 component array consisting of (pixel column number (i), pixel row number(j), image slice number (k))
-  ///      NOTE: This algorithm uses row-major ordering to calculate indices
+  /// \return A 3 component array consisting of (pixel column number (i), pixel row number(j), image slice number (k))
+  /// @note This algorithm uses row-major ordering to calculate indices, as is the case with DICOM images
   static inline std::array<uint16_t, 3> LinearizedToVectorizedIndex(const uint64_t linearizedIndex, const uint16_t nI, const uint16_t nJ, const uint16_t nK)
   {
     if(linearizedIndex >= nI*nJ*nK)
