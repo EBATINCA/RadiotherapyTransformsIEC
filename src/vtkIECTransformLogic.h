@@ -133,7 +133,7 @@ public:
   /// @param outputTransform General (linear) transform matrix fromFrame -> toFrame. Matrix is correct if return flag is true.  
   /// @param transformForBeam calculate dynamic transformation for beam model or other models
   /// (e.g. transformation from Patient RAS frame to Collimation frame: RAS -> Patient -> TableTop -> Eccentric -> Patient Support -> Fixed reference -> Gantry -> Collimator)  //TODO: Deprecated
-  /// \return Success flag (false on any error)
+  /// @return Success flag (false on any error)
   bool GetTransformBetween(CoordinateSystemIdentifier fromFrame, CoordinateSystemIdentifier toFrame,
     vtkGeneralTransform* outputTransform, bool transformForBeam=false);
   //TODO: See this transformForBeam part if still needed
