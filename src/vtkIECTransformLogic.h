@@ -29,6 +29,7 @@
 #include <map>
 #include <vector>
 #include <list>
+#include <cstdint>
 #include <array>
 
 // VTK includes
