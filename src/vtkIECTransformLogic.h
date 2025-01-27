@@ -160,13 +160,13 @@ public:
   }
 
   /// @brief Converts a vectorized index position to linear index position of a pixel in a DICOM image
-  /// @param i the pixel column number
-  /// @param j the pixel row number
-  /// @param k the image slice number
+  /// @param i the pixel column index (starting at zero)
+  /// @param j the pixel row index (starting at zero)
+  /// @param k the image slice index (starting at zero)
   /// @param nI number of columns per image
   /// @param nJ number of rows per image
   /// @param nK number of image slices
-  /// @return The linearised pixel index as a single int
+  /// @return The linearised pixel index starting at zero as a single int
   /// @note This algorithm uses row-major ordering to calculate indices, as is the case with DICOM images
   static inline uint64_t VectorizedToLinearizedIndex(const uint16_t i, const uint16_t j , const uint16_t k, const uint16_t nI, const uint16_t nJ, const uint16_t nK)
   {
@@ -178,11 +178,11 @@ public:
   }
 
   /// @brief Converts a linear index position to a vectorized index position of a pixel in an DICOM image
-  /// @param linearizedIndex the linear index to be converted
+  /// @param linearizedIndex the linear index (starting at zero) to be converted
   /// @param nI number of columns per image
   /// @param nJ number of rows per image
   /// @param nK number of image slices
-  /// @return A 3 component array consisting of (pixel column number (i), pixel row number(j), image slice number (k))
+  /// @return A 3 component array consisting of (pixel column index (i), pixel row index (j), image slice index (k)) starting from zero
   /// @note This algorithm uses row-major ordering to calculate indices, as is the case with DICOM images
   static inline std::array<uint16_t, 3> LinearizedToVectorizedIndex(const uint64_t linearizedIndex, const uint16_t nI, const uint16_t nJ, const uint16_t nK)
   {
