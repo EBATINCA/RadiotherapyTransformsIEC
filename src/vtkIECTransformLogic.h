@@ -131,30 +131,59 @@ public:
   vtkTypeMacro(vtkIECTransformLogic, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent) override;
 
-  /// @brief Update GantryToFixedReference transform based on gantry rotation angle about the y-axis
-  /// with possibility of setting gantry pitch angle which is not part of IEC standard but a DICOM addition
-  /// The order of rotations is pitch rotation followed by gantry rotation
-  void UpdateGantryToFixedReferenceTransform(double gantryRotationAngleDeg,  double gantryPitchAngleDeg=0);
-  /// Update CollimatorToGantry transform based on collimator angle parameter and Z displacement of the collimator
+  /// @brief Update GantryToFixedReference transform based on gantry rotation angle about the Y-axis with possibility of setting gantry pitch angle which is not part of IEC standard but a DICOM addition
+  /// The order of rotations starting from the fixed reference frame is pitch rotation followed by gantry rotation
+  /// @param gantryRotationAngleDeg the rotation of the gantry frame counter clockwise around the Y-axis
+  /// @param gantryPitchAngleDeg the rotation of the gantry frame counter clockwise around the X-axis (not part of IEC standard but a DICOM addition)
+  void UpdateGantryToFixedReferenceTransform(double gantryRotationAngleDeg, double gantryPitchAngleDeg=0);
+  /// @brief Update CollimatorToGantry transform based on collimator angle parameter and Z displacement of the collimator
+  /// @param collimatorRotationAngleDeg the rotation of the collimator frame counter clockwise around the Z-axis starting from the gantry frame
+  /// @param bz displacement of the collimator frame origin from the gantry frame origin along the Z-axis
   void UpdateCollimatorToGantryTransform(double collimatorRotationAngleDeg, double bz = 0);
-  /// Update WedgeFilterToCollimator transform based on wedge filter angle parameter and z displacement of the wedge filter
+  /// @brief Update WedgeFilterToCollimator transform based on wedge filter angle parameter and z displacement of the wedge filter
+  /// @param wedgefilterRotationAngleDeg the rotation of the wedge filter frame counter clockwise around the Z-axis starting from the collimator frame
+  /// @param wz displacement of the wedge filter frame origin from the collimator frame origin along the Z-axis
   void UpdateWedgeFilterToCollimatorTransform(double wedgefilterRotationAngleDeg, double wz = 0);
-
-  /// Update PatientSupportRotationToFixedReference transform based on patient support rotation parameter
+  /// @brief Update PatientSupportRotationToFixedReference transform based on patient support rotation parameter
+  /// @param patientSupportRotationAngleDeg the rotation of the patient support rotation frame counter clockwise around the Z-axis starting from the fixed reference frame
   void UpdatePatientSupportRotationToFixedReferenceTransform(double patientSupportRotationAngleDeg);
-  /// Update TableTopEccentricRotationToPatientSupportRotation transform based on eccentric angle rotation parameter and z deplacement of the eccentric device
+  /// @brief Update TableTopEccentricRotationToPatientSupportRotation transform based on eccentric angle rotation parameter and z deplacement of the eccentric device
+  /// Starting from the patient support frame displacement of the origin along the Y-axis is performed followed by the rotation around the Z-axis
+  /// @param TableTopEccentricRotationAngleDeg the rotation of the table top eccentric frame counter clockwise around the Z-axis
+  /// @param ey displacement of the table top eccentric frame origin along the Y-axis
   void UpdateTableTopEccentricRotationToPatientSupportRotationTransform(double TableTopEccentricRotationAngleDeg, double ey = 0);
-  /// Update TableTopToTableTopEccentricRotation transform based on Table Top displacement(in X,Y,Z), Table Top pitch rotation(around X axis), and Table Top roll rotation(around Y axis) parameters
+  /// @brief Update TableTopToTableTopEccentricRotation transform based on Table Top displacement(in X,Y,Z), Table Top pitch rotation(around X axis), and Table Top roll rotation(around Y axis) parameters
+  /// Starting from the table top eccentric frame displacement of the origin is performed followed by table top pitch rotation around the X-axis and then table top roll rotation around the Y-axis
+  /// @param tx displacement of the table top frame origin along the X-axis
+  /// @param ty displacement of the table top frame origin along the Y-axis
+  /// @param tz displacement of the table top frame origin along the Z-axis
+  /// @param tableTopPitchAngleDeg the rotation of the table top eccentric frame counter clockwise around the X-axis
+  /// @param tableTopRollAngleDeg the rotation of the table top eccentric frame counter clockwise around the Y-axis
   void UpdateTableTopToTableTopEccentricRotationTransform(double tx, double ty, double tz, double tableTopPitchAngleDeg = 0, double tableTopRollAngleDeg = 0);
-  /// Update PatientToTableTop transform based on patient displacement(in X,Y,Z) and patient rotation around X(Psi), Y(Phi) and Z(Theta) parameters
+  /// @brief Update PatientToTableTop transform based on patient displacement(in X,Y,Z) and patient rotation around X(Psi), Y(Phi) and Z(Theta) parameters
+  /// Starting from the table top frame displacement of the origin is performed followed by Psi rotation around the X-axis, Phi rotation around the Y-axis, and then Theta rotation around the Z-axis respectively
+  /// @param px displacement of the patient frame origin along the X-axis
+  /// @param py displacement of the patient frame origin along the Y-axis
+  /// @param pz displacement of the patient frame origin along the Z-axis
+  /// @param patientPsiAngleDeg the rotation of the table top eccentric frame counter clockwise around the X-axis
+  /// @param patientPhiAngleDeg the rotation of the table top eccentric frame counter clockwise around the Y-axis
+  /// @param patientThetaAngleDeg the rotation of the table top eccentric frame counter clockwise around the Z-axis
   void UpdatePatientToTableTopTransform(double px, double py, double pz, double patientPsiAngleDeg = 0, double patientPhiAngleDeg = 0, double patientThetaAngleDeg = 0);
-  /// Update PatientImageRegularGrid transform based on the parameters
-  /// 1. ColumnPixelSpacing(X) and RowPixelSpacing(Y) of the  pixels in the image
-  /// 2. SliceDistance which is the spacing between each consequtive image
-  /// 3. Sx, Sy, Sz giving the displacement of the zeroth pixel position in the zeroth image from patient frame centre in the patient coordinate frame
-  /// 4. DirectionCosineX,DirectionCosineY represent the row and column direction cosines of the image orientation
-  ///    NOTE: default orientation corresponds to the X-pixel number increasing from the right to the left of the patient, and Y-pixel number increasing from anterior to poserier
-  ///     Image slice number increses from inferior to superior (coorsponds to DICOM coordinate system)
+  /// @brief Update PatientImageRegularGrid transform based on the parameters
+  /// The transformation matrix from DICOM(patient frame in LPS format) to patient image regular grid frame of the following format is defined
+  ///     directionCosineXx*columnPixelSpacing, directionCosineYx*rowPixelSpacing, directionCosineZx*sliceDistance, sx
+  /// m = directionCosineXy*columnPixelSpacing, directionCosineYy*rowPixelSpacing, directionCosineZy*sliceDistance, sy
+  ///     directionCosineXz*columnPixelSpacing, directionCosineYz*rowPixelSpacing, directionCosineZz*sliceDistance, sz
+  ///                                        0,                                 0,                               0,  1
+  /// @param columnPixelSpacing distance between each pixel column within the image
+  /// @param RowPixelSpacing distance between each pixel row within the image
+  /// @param SliceDistance the spacing between each consequtive images
+  /// @param Sx the X-displacement of the zeroth pixel position in the zeroth image from patient frame centre in the patient coordinate frame
+  /// @param Sy the Y-displacement of the zeroth pixel position in the zeroth image from patient frame centre in the patient coordinate frame
+  /// @param Sz the Z-displacement of the zeroth pixel position in the zeroth image from patient frame centre in the patient coordinate frame
+  /// @param DirectionCosineX the row direction cosine of the image orientation
+  /// @param DirectionCosineY the column direction cosine of the image orientation
+  /// @note default orientation corresponds to the X-pixel number increasing from the right to the left of the patient, and Y-pixel number increasing from anterior to poserier Image slice number increses from inferior to superior (coorsponds to DICOM coordinate system)
   void UpdatePatientImageRegularGridToDICOMTransform(double columnPixelSpacing, double rowPixelSpacing, double sliceDistance, double sx, double sy, double sz,
                                                      double directionCosineXx = 1, double directionCosineXy = 0, double directionCosineXz = 0,
                                                      double directionCosineYx = 0, double directionCosineYy = 1, double directionCosineYz = 0);
@@ -166,17 +195,6 @@ public:
   /// @param transformForBeam calculate dynamic transformation for beam model or other models
   /// (e.g. transformation from Patient RAS frame to Collimation frame: RAS -> Patient -> TableTop -> Eccentric -> Patient Support -> Fixed reference -> Gantry -> Collimator)  //TODO: Deprecated
   /// @return Success flag (false on any error)
-  bool GetTransformBetween(CoordinateSystemIdentifier fromFrame, CoordinateSystemIdentifier toFrame,
-    vtkGeneralTransform* outputTransform, bool transformForBeam=false);
-  //TODO: See this transformForBeam part if still needed
-
-  /// Get transform from one coordinate frame to another
-  /// @param fromFrame - start transformation from frame
-  /// @param toFrame - proceed transformation to frame
-  /// @param outputTransform - General (linear) transform matrix fromFrame -> toFrame. Matrix is correct if return flag is true.
-  /// @param transformForBeam - calculate dynamic transformation for beam model or other models
-  /// (e.g. transformation from Patient RAS frame to Collimation frame: RAS -> Patient -> TableTop -> Eccentric -> Patient Support -> Fixed reference -> Gantry -> Collimator)  //TODO: Deprecated
-  /// \return Success flag (false on any error)
   bool GetTransformBetween(CoordinateSystemIdentifier fromFrame, CoordinateSystemIdentifier toFrame,
     vtkGeneralTransform* outputTransform, bool transformForBeam=false);
   //TODO: See this transformForBeam part if still needed
