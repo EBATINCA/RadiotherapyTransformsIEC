@@ -189,7 +189,7 @@ public:
   /// @param linearizedIndex the linear index (starting at zero) to be converted
   /// @param nElems 3D array containing the number of elements in each dimension
   /// @return A 3-component array consisting of the indices in each dimension (e0,e1,e2)
-  static inline std::array<uint16_t, 3> LinearizedToVectorizedIndex(const uint64_t linearizedIndex, const std::array<uint16_t, 3>& elems)
+  static inline std::array<uint16_t, 3> LinearizedToVectorizedIndex(const uint64_t linearizedIndex, const std::array<uint16_t, 3>& nElems)
   {
     const uint16_t n0 = nElems[0];
     const uint16_t n1 = nElems[1];
