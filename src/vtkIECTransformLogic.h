@@ -160,7 +160,7 @@ public:
   }
 
   /// @brief Converts a 3D vector containing the indices (e0,e1,e2) in each axis of a regular grid to a linear index position when the 3D data are stored in a linear flat array
-  /// @note In the case of DICOM images stacked by slice position as regular grid, e0: slice index, e1: row index, e2: column index, (all starting from zero), since PixelData are stored with row-major ordering
+  /// @note In the case of DICOM images stacked by slice position as regular grid, dim 0: slice index, dim 1: row index, dim 2: column index, (all starting from zero), since PixelData are stored with row-major ordering
   /// @note C ordering is used, ie the last dimension is contiguous in memory, then the second dimension, with the first dimension being most distant.
   /// @see generalized row-major ordering https://en.wikipedia.org/wiki/Row-_and_column-major_order#Address_calculation_in_general
   /// @param vectorizedIndex 3-component array consisting of the indices in each dimension (e0,e1,e2)
