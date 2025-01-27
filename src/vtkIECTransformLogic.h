@@ -133,48 +133,52 @@ public:
 
   /// @brief Update GantryToFixedReference transform based on gantry rotation angle about the Y-axis with possibility of setting gantry pitch angle which is not part of IEC standard but a DICOM addition
   /// The order of rotations starting from the fixed reference frame is pitch rotation followed by gantry rotation
-  /// @param gantryRotationAngleDeg the rotation of the gantry frame counter clockwise around the Y-axis
-  /// @param gantryPitchAngleDeg the rotation of the gantry frame counter clockwise around the X-axis (not part of IEC standard but a DICOM addition)
+  /// see section 3.4 of IEC61217:2011, p.12 and [URL to Slicer3D forum]
+  /// @param gantryRotationAngleDeg the rotation in degrees of the gantry frame counter clockwise around the Y-axis
+  /// @param gantryPitchAngleDeg the rotation in degrees of the gantry frame counter clockwise around the X-axis (not part of IEC standard but a DICOM addition)
   void UpdateGantryToFixedReferenceTransform(double gantryRotationAngleDeg, double gantryPitchAngleDeg=0);
   /// @brief Update CollimatorToGantry transform based on collimator angle parameter and Z displacement of the collimator
-  /// @param collimatorRotationAngleDeg the rotation of the collimator frame counter clockwise around the Z-axis starting from the gantry frame
+  /// see section 3.5 of IEC61217:2011, p.13
+  /// @param collimatorRotationAngleDeg the rotation in degrees of the collimator frame counter clockwise around the Z-axis starting from the gantry frame
   /// @param bz displacement of the collimator frame origin from the gantry frame origin along the Z-axis
   void UpdateCollimatorToGantryTransform(double collimatorRotationAngleDeg, double bz = 0);
   /// @brief Update WedgeFilterToCollimator transform based on wedge filter angle parameter and z displacement of the wedge filter
-  /// @param wedgefilterRotationAngleDeg the rotation of the wedge filter frame counter clockwise around the Z-axis starting from the collimator frame
+  /// see section 3.6 of IEC61217:2011, p.13
+  /// @param wedgefilterRotationAngleDeg the rotation in degrees of the wedge filter frame counter clockwise around the Z-axis starting from the collimator frame
   /// @param wz displacement of the wedge filter frame origin from the collimator frame origin along the Z-axis
   void UpdateWedgeFilterToCollimatorTransform(double wedgefilterRotationAngleDeg, double wz = 0);
   /// @brief Update PatientSupportRotationToFixedReference transform based on patient support rotation parameter
-  /// @param patientSupportRotationAngleDeg the rotation of the patient support rotation frame counter clockwise around the Z-axis starting from the fixed reference frame
+  /// see section 3.8 of IEC61217:2011, p.14
+  /// @param patientSupportRotationAngleDeg the rotation in degrees of the patient support rotation frame counter clockwise around the Z-axis starting from the fixed reference frame
   void UpdatePatientSupportRotationToFixedReferenceTransform(double patientSupportRotationAngleDeg);
   /// @brief Update TableTopEccentricRotationToPatientSupportRotation transform based on eccentric angle rotation parameter and z displacement of the eccentric device
   /// Starting from the patient support frame displacement of the origin along the Y-axis is performed followed by the rotation around the Z-axis
-  /// @param TableTopEccentricRotationAngleDeg the rotation of the table top eccentric frame counter clockwise around the Z-axis
+  /// see section 3.9 of IEC61217:2011, p.15
+  /// @param TableTopEccentricRotationAngleDeg the rotation in degrees of the table top eccentric frame counter clockwise around the Z-axis
   /// @param ey displacement of the table top eccentric frame origin along the Y-axis
   void UpdateTableTopEccentricRotationToPatientSupportRotationTransform(double TableTopEccentricRotationAngleDeg, double ey = 0);
   /// @brief Update TableTopToTableTopEccentricRotation transform based on Table Top displacement(in X,Y,Z), Table Top pitch rotation(around X axis), and Table Top roll rotation(around Y axis) parameters
   /// Starting from the table top eccentric frame displacement of the origin is performed followed by table top pitch rotation around the X-axis and then table top roll rotation around the Y-axis
+  /// see section 3.10 of IEC61217:2011, p.15
   /// @param tx displacement of the table top frame origin along the X-axis
   /// @param ty displacement of the table top frame origin along the Y-axis
   /// @param tz displacement of the table top frame origin along the Z-axis
-  /// @param tableTopPitchAngleDeg the rotation of the table top eccentric frame counter clockwise around the X-axis
-  /// @param tableTopRollAngleDeg the rotation of the table top eccentric frame counter clockwise around the Y-axis
+  /// @param tableTopPitchAngleDeg the rotation in degrees of the table top eccentric frame counter clockwise around the X-axis
+  /// @param tableTopRollAngleDeg the rotation in degrees of the table top eccentric frame counter clockwise around the Y-axis
   void UpdateTableTopToTableTopEccentricRotationTransform(double tx, double ty, double tz, double tableTopPitchAngleDeg = 0, double tableTopRollAngleDeg = 0);
   /// @brief Update PatientToTableTop transform based on patient displacement(in X,Y,Z) and patient rotation around X(Psi), Y(Phi) and Z(Theta) parameters
   /// Starting from the table top frame displacement of the origin is performed followed by Psi rotation around the X-axis, Phi rotation around the Y-axis, and then Theta rotation around the Z-axis respectively
+  /// see section 3.11 of IEC61217:2011, p.16
   /// @param px displacement of the patient frame origin along the X-axis
   /// @param py displacement of the patient frame origin along the Y-axis
   /// @param pz displacement of the patient frame origin along the Z-axis
-  /// @param patientPsiAngleDeg the rotation of the table top eccentric frame counter clockwise around the X-axis
-  /// @param patientPhiAngleDeg the rotation of the table top eccentric frame counter clockwise around the Y-axis
-  /// @param patientThetaAngleDeg the rotation of the table top eccentric frame counter clockwise around the Z-axis
+  /// @param patientPsiAngleDeg the rotation in degrees of the table top eccentric frame counter clockwise around the X-axis
+  /// @param patientPhiAngleDeg the rotation in degrees of the table top eccentric frame counter clockwise around the Y-axis
+  /// @param patientThetaAngleDeg the rotation in degrees of the table top eccentric frame counter clockwise around the Z-axis
   void UpdatePatientToTableTopTransform(double px, double py, double pz, double patientPsiAngleDeg = 0, double patientPhiAngleDeg = 0, double patientThetaAngleDeg = 0);
   /// @brief Update PatientImageRegularGrid transform based on the parameters
-  /// The transformation matrix from DICOM(patient frame in LPS format) to patient image regular grid frame of the following format is defined
-  ///     directionCosineXx*columnPixelSpacing, directionCosineYx*rowPixelSpacing, directionCosineZx*sliceDistance, sx
-  /// m = directionCosineXy*columnPixelSpacing, directionCosineYy*rowPixelSpacing, directionCosineZy*sliceDistance, sy
-  ///     directionCosineXz*columnPixelSpacing, directionCosineYz*rowPixelSpacing, directionCosineZz*sliceDistance, sz
-  ///                                        0,                                 0,                               0,  1
+  /// Using the input variables the corresponding transformation matrix from DICOM (patient frame in LPS format) to patient image regular grid frame is constructed and applied.
+  /// see https://nipy.org/nibabel/dicom/dicom_orientation.html
   /// @param columnPixelSpacing distance between each pixel column within the image
   /// @param RowPixelSpacing distance between each pixel row within the image
   /// @param SliceDistance the spacing between consecutive images
