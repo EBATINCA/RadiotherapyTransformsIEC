@@ -159,45 +159,50 @@ public:
     return this->IECTransforms;
   }
 
-  /// @brief Converts a 3D vector containing the index (k,j,i) in each axis of a regular grid to a linear index position when the 3D data are stored in a linear flat array
-  /// @note C ordering is used, ie the last dimension i (column index) is contiguous in memory, then the dimension j (row index), with the first dimension (slice index) being most distant.
+  /// @brief Converts a 3D vector containing the indices (e0,e1,e2) in each axis of a regular grid to a linear index position when the 3D data are stored in a linear flat array
+  /// @note In the case of DICOM images stacked by slice position as regular grid, e0: slice index, e1: row index, e2: column index, (all starting from zero), since PixelData are stored with row-major ordering
+  /// @note C ordering is used, ie the last dimension is contiguous in memory, then the second dimension, with the first dimension being most distant.
   /// @see generalized row-major ordering https://en.wikipedia.org/wiki/Row-_and_column-major_order#Address_calculation_in_general
-  /// @param k element index in first axis; the image slice index (starting at zero)
-  /// @param j element index in second axis; the pixel row index (starting at zero)
-  /// @param i element index in third axis; the pixel column index (starting at zero)
-  /// @param nK number of elements in first dimension (image slices)
-  /// @param nJ number of elements in second dimension (rows per image)
-  /// @param nI number of elements in third dimension (columns per image)
+  /// @param vectorizedIndex 3-component array consisting of the indices in each dimension (e0,e1,e2)
+  /// @param nElems 3D array containing the number of elements in each dimension
   /// @return The linearised pixel index starting at zero as a single int
   /// @note This algorithm uses row-major ordering to calculate indices, as is the case with DICOM images
-  static inline uint64_t VectorizedToLinearizedIndex(const uint16_t k, const uint16_t j , const uint16_t i, const uint16_t nK, const uint16_t nJ, const uint16_t nI)
+  static inline uint64_t VectorizedToLinearizedIndex(const std::array<uint16_t, 3>& vectorizedIndex, const std::array<uint16_t, 3>& nElems)
   {
-    if(k >= nK || j>= nJ || i >= nI)
+    const uint16_t n0 = nElems[0];
+    const uint16_t n1 = nElems[1];
+    const uint16_t n2 = nElems[2];
+    const uint16_t e0 = vectorizedIndex[0];
+    const uint16_t e1 = vectorizedIndex[1];
+    const uint16_t e2 = vectorizedIndex[2];
+    if(e0 >= n0 || e1 >= n1 || e2 >= n2)
     {
-      throw std::runtime_error("Indices (" + std::to_string(k) + "," + std::to_string(j) + "," + std::to_string(i) + ") out of range (" + std::to_string(nK) + "," + std::to_string(nJ) + "," + std::to_string(nI) + ")" );
+      throw std::runtime_error("Indices (" + std::to_string(e0) + "," + std::to_string(e1) + "," + std::to_string(e2) + ") out of range (" + std::to_string(n0) + "," + std::to_string(n1) + "," + std::to_string(n2) + ")" );
     }
-    return static_cast<uint64_t>(k)*nI*nJ + static_cast<uint64_t>(j)*nI + static_cast<uint64_t>(i);
+    return static_cast<uint64_t>(e0)*n1*n2 + static_cast<uint64_t>(e1)*n2 + static_cast<uint64_t>(e2);
   }
 
-  /// @brief Converts a linear index position of data in a 3D regular grid corresponding to data stored in a linear flat array to a 3D index (k,j,i) in each axis of the grid
-  /// @note C ordering is used, ie the last dimension i (column index) is contiguous in memory, then the dimension j (row index), with the first dimension (slice index) being most distant.
+  /// @brief Converts a linear index position of data (stored as linear flat array) in a 3D regular grid to a 3D index (e0,e1,e2) in each axis of the grid
+  /// @note In the case of DICOM images stacked by slice position as regular grid, dim 0: slice index, dim 1: row index, dim 2: column index, (all starting from zero), since PixelData are stored with row-major ordering
+  /// @note C ordering is used, ie the last dimension is contiguous in memory, then the second dimension, with the first dimension being most distant.
   /// @see generalized row-major ordering https://en.wikipedia.org/wiki/Row-_and_column-major_order#Address_calculation_in_general
   /// @param linearizedIndex the linear index (starting at zero) to be converted
-  /// @param nK number of elements in first dimension (image slices)
-  /// @param nJ number of elements in second dimension (rows per image)
-  /// @param nI number of elements in third dimension (columns per image)
-  /// @return A 3 component array consisting of (image slice index (k), pixel row index (j), pixel column index (i)) starting from zero
-  /// @note This algorithm uses row-major ordering to calculate indices, as is the case with DICOM images
-  static inline std::array<uint16_t, 3> LinearizedToVectorizedIndex(const uint64_t linearizedIndex, const uint16_t nK, const uint16_t nJ, const uint16_t nI)
+  /// @param nElems 3D array containing the number of elements in each dimension
+  /// @return A 3-component array consisting of the indices in each dimension (e0,e1,e2)
+  static inline std::array<uint16_t, 3> LinearizedToVectorizedIndex(const uint64_t linearizedIndex, const std::array<uint16_t, 3>& elems)
   {
-    if(linearizedIndex >= nK*nJ*nI)
+    const uint16_t n0 = nElems[0];
+    const uint16_t n1 = nElems[1];
+    const uint16_t n2 = nElems[2];
+    const uint64_t totalElems = static_cast<uint64_t>(n0)*n1*n2;
+    if(linearizedIndex >= totalElems)
     {
-      throw std::runtime_error("Index (" + std::to_string(linearizedIndex) + ") out of range (nK*nJ*nI = " + std::to_string(nK*nJ*nI) + ")" );
+      throw std::runtime_error("Index (" + std::to_string(linearizedIndex) + ") out of range (totalElems = " + std::to_string(totalElems) + ")" );
     }
-    const uint16_t k = static_cast<uint16_t>((linearizedIndex/nI)/nJ);
-    const uint16_t j = static_cast<uint16_t>((linearizedIndex/nI)%nJ);
-    const uint16_t i = static_cast<uint16_t>( linearizedIndex%nI);
-    return std::array<uint16_t,3>{k, j, i};
+    const uint16_t e0 = static_cast<uint16_t>((linearizedIndex/n2)/n1);
+    const uint16_t e1 = static_cast<uint16_t>((linearizedIndex/n2)%n1);
+    const uint16_t e2 = static_cast<uint16_t>( linearizedIndex%n2);
+    return std::array<uint16_t,3>{e0, e1, e2};
   }
 
   //std::map<CoordinateSystemIdentifier, std::list<CoordinateSystemIdentifier>> GetCoordinateSystemsHierarchy()
