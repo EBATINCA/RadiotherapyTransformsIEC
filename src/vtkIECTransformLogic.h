@@ -168,7 +168,7 @@ public:
   /// @param nK number of image slices
   /// @return The linearised pixel index as a single int
   /// @note This algorithm uses row-major ordering to calculate indices, as is the case with DICOM images
-  static inline uint64_t VectorizedToLinearizedImageIndex(const uint16_t i, const uint16_t j , const uint16_t k, const uint16_t nI, const uint16_t nJ, const uint16_t nK)
+  static inline uint64_t VectorizedToLinearizedIndex(const uint16_t i, const uint16_t j , const uint16_t k, const uint16_t nI, const uint16_t nJ, const uint16_t nK)
   {
     if(i >= nI || j>= nJ || k >= nK)
     {
