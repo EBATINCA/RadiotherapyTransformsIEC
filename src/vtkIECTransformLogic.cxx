@@ -117,18 +117,18 @@ vtkIECTransformLogic::vtkIECTransformLogic()
   this->CoordinateSystemsHierarchy[TableTop] = { Patient };
   this->CoordinateSystemsHierarchy[Patient] = { DICOM, RAS };
   this->CoordinateSystemsHierarchy[DICOM] = { PatientImageRegularGrid };
-  
-  // Build non-trivial default transformations
-  // DICOM is equivalent to rotation around x of 90deg 
-  double dicomRotationMatrix[16] = {1, 0,0,0,
-                                    0, 0,1,0,
-                                    0,-1,0,0,
-                                    0, 0,0,1};
-  this->DICOMToPatientTransform->Concatenate(dicomRotationMatrix);
-  
+
+  // Build transformations that are not identity by default
+  // define transformation matrix from the DICOM patient frame(LPS) to IEC patient frame(LSA) which is equivalent to a rotation around the X-axis +90deg counter clockwise
+  double dicomToPatientTransformationMatrix[16] = {1, 0,0,0,
+                                                   0, 0,1,0,
+                                                   0,-1,0,0,
+                                                   0, 0,0,1};
+  this->DICOMToPatientTransform->Concatenate(dicomToPatientTransformationMatrix);
+
   //
   // Build concatenated transform hierarchy
-  // 
+  //
   this->GantryToFixedReferenceConcatenatedTransform->Concatenate(this->FixedReferenceToRasTransform);
   this->GantryToFixedReferenceConcatenatedTransform->Concatenate(this->GantryToFixedReferenceTransform);
 
@@ -137,7 +137,7 @@ vtkIECTransformLogic::vtkIECTransformLogic()
 
   this->WedgeFilterToCollimatorConcatenatedTransform->Concatenate(this->CollimatorToGantryConcatenatedTransform);
   this->WedgeFilterToCollimatorConcatenatedTransform->Concatenate(this->WedgeFilterToCollimatorTransform);
-    
+
   this->LeftImagingPanelToGantryConcatenatedTransform->Concatenate(this->CollimatorToGantryConcatenatedTransform);
   this->LeftImagingPanelToGantryConcatenatedTransform->Concatenate(this->LeftImagingPanelToGantryTransform);
 
@@ -161,7 +161,7 @@ vtkIECTransformLogic::vtkIECTransformLogic()
 
   this->PatientToTableTopConcatenatedTransform->Concatenate(this->TableTopToTableEccentricRotationConcatenatedTransform);
   this->PatientToTableTopConcatenatedTransform->Concatenate(this->PatientToTableTopTransform);
-  
+
   this->DICOMToPatientConcatenatedTransform->Concatenate(this->PatientToTableTopConcatenatedTransform);
   this->PatientImageRegularGridToDICOMTransform->Concatenate(this->DICOMToPatientConcatenatedTransform);
   this->RasToPatientConcatenatedTransform->Concatenate(this->PatientToTableTopConcatenatedTransform);
@@ -197,7 +197,7 @@ void vtkIECTransformLogic::PrintSelf(ostream& os, vtkIndent indent)
   os << indent << "DICOMToPatientTransform: " << this->DICOMToPatientTransform << std::endl;
   os << indent << "PatientImageRegularGridToDICOMTransform: " << this->PatientImageRegularGridToDICOMTransform << std::endl;
   os << indent << "RasToPatientTransform: " << this->RasToPatientTransform << std::endl;
-  
+
   os << indent << std::endl << "Concatenated transforms:" << std::endl;
   os << indent << "GantryToFixedReferenceConcatenatedTransform: " << this->GantryToFixedReferenceConcatenatedTransform << std::endl;
   os << indent << "CollimatorToGantryConcatenatedTransform: " << this->CollimatorToGantryConcatenatedTransform << std::endl;
@@ -279,14 +279,14 @@ void vtkIECTransformLogic::UpdatePatientImageRegularGridToDICOMTransform(double 
                                                                          double directionCosineYx, double directionCosineYy, double directionCosineYz)
 {
   this->PatientImageRegularGridToDICOMTransform->Identity();
-  
+
   double directionCosineZx = directionCosineXy*directionCosineYz - directionCosineXz*directionCosineYy;
   double directionCosineZy = directionCosineXz*directionCosineYx - directionCosineXx*directionCosineYz;
   double directionCosineZz = directionCosineXx*directionCosineYy - directionCosineXy*directionCosineYx;
   double m[16] = {directionCosineXx*columnPixelSpacing, directionCosineYx*rowPixelSpacing, directionCosineZx*sliceDistance, sx,
                   directionCosineXy*columnPixelSpacing, directionCosineYy*rowPixelSpacing, directionCosineZy*sliceDistance, sy,
                   directionCosineXz*columnPixelSpacing, directionCosineYz*rowPixelSpacing, directionCosineZz*sliceDistance, sz,
-                  0, 0, 0, 1};			   
+                  0, 0, 0, 1};
   this->PatientImageRegularGridToDICOMTransform->Concatenate(m);
 }
 
