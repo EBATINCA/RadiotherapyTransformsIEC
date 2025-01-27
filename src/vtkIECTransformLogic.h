@@ -147,7 +147,7 @@ public:
   /// @brief Update PatientSupportRotationToFixedReference transform based on patient support rotation parameter
   /// @param patientSupportRotationAngleDeg the rotation of the patient support rotation frame counter clockwise around the Z-axis starting from the fixed reference frame
   void UpdatePatientSupportRotationToFixedReferenceTransform(double patientSupportRotationAngleDeg);
-  /// @brief Update TableTopEccentricRotationToPatientSupportRotation transform based on eccentric angle rotation parameter and z deplacement of the eccentric device
+  /// @brief Update TableTopEccentricRotationToPatientSupportRotation transform based on eccentric angle rotation parameter and z displacement of the eccentric device
   /// Starting from the patient support frame displacement of the origin along the Y-axis is performed followed by the rotation around the Z-axis
   /// @param TableTopEccentricRotationAngleDeg the rotation of the table top eccentric frame counter clockwise around the Z-axis
   /// @param ey displacement of the table top eccentric frame origin along the Y-axis
@@ -177,13 +177,13 @@ public:
   ///                                        0,                                 0,                               0,  1
   /// @param columnPixelSpacing distance between each pixel column within the image
   /// @param RowPixelSpacing distance between each pixel row within the image
-  /// @param SliceDistance the spacing between each consequtive images
-  /// @param Sx the X-displacement of the zeroth pixel position in the zeroth image from patient frame centre in the patient coordinate frame
+  /// @param SliceDistance the spacing between consecutive images
+  /// @param Sx the X-displacement of the zeroth pixel position in the zeroth image from patient frame centre in the patient coordinate frame (DICOM LPS, not IEC)
   /// @param Sy the Y-displacement of the zeroth pixel position in the zeroth image from patient frame centre in the patient coordinate frame
   /// @param Sz the Z-displacement of the zeroth pixel position in the zeroth image from patient frame centre in the patient coordinate frame
-  /// @param DirectionCosineX the row direction cosine of the image orientation
+  /// @param DirectionCosineX the row direction cosine of the image orientation (see https://dicom.innolitics.com/ciods/ct-image/image-plane/00200037)
   /// @param DirectionCosineY the column direction cosine of the image orientation
-  /// @note default orientation corresponds to the X-pixel number increasing from the right to the left of the patient, and Y-pixel number increasing from anterior to poserier Image slice number increses from inferior to superior (coorsponds to DICOM coordinate system)
+  /// @note default orientation (for BIPED) corresponds to the X-pixel number increasing from the right to the left of the patient, and Y-pixel number increasing from anterior to posterior, Image slice index increases from inferior to superior (corresponds to DICOM's LPS coordinate system)
   void UpdatePatientImageRegularGridToDICOMTransform(double columnPixelSpacing, double rowPixelSpacing, double sliceDistance, double sx, double sy, double sz,
                                                      double directionCosineXx = 1, double directionCosineXy = 0, double directionCosineXz = 0,
                                                      double directionCosineYx = 0, double directionCosineYy = 1, double directionCosineYz = 0);
