@@ -159,7 +159,8 @@ public:
     return this->IECTransforms;
   }
 
-  /// @brief Converts a vectorized index position to linear index position of a pixel in a DICOM image
+  /// @brief Converts a 3D vector containing the index (k,j,i) in each axis of a regular grid to a linear index position when the 3D data are stored in a linear flat array
+  /// @note C ordering is used, ie the last dimension i (column index) is contiguous in memory, then the dimension j (row index), with the first dimension (slice index) being most distant.
   /// @param i the pixel column index (starting at zero)
   /// @param j the pixel row index (starting at zero)
   /// @param k the image slice index (starting at zero)
@@ -177,7 +178,8 @@ public:
     return static_cast<uint64_t>(k)*nI*nJ + static_cast<uint64_t>(j)*nI + static_cast<uint64_t>(i);
   }
 
-  /// @brief Converts a linear index position to a vectorized index position of a pixel in an DICOM image
+  /// @brief Converts a linear index position of data in a 3D regular grid stored in a linear flat array to a 3D index (k,j,i) in each axis of the grid
+  /// @note C ordering is used, ie the last dimension i (column index) is contiguous in memory, then the dimension j (row index), with the first dimension (slice index) being most distant.
   /// @param linearizedIndex the linear index (starting at zero) to be converted
   /// @param nI number of columns per image
   /// @param nJ number of rows per image
