@@ -231,8 +231,8 @@ void vtkIECTransformLogic::PrintSelf(ostream& os, vtkIndent indent)
 void vtkIECTransformLogic::UpdateGantryToFixedReferenceTransform(double gantryRotationAngleDeg, double gantryPitchAngleDeg)
 {
   this->GantryToFixedReferenceTransform->Identity();
-  this->GantryToFixedReferenceTransform->RotateX(gantryPitchAngleDeg);
   this->GantryToFixedReferenceTransform->RotateY(gantryRotationAngleDeg);
+  this->GantryToFixedReferenceTransform->RotateX(gantryPitchAngleDeg);
 }
 
 //----------------------------------------------------------------------------
