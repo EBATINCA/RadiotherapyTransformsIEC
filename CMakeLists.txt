@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.20)
 #-----------------------------------------------------------------------------
 
 project(vtkIECTransformLogic
-  LANGUAGES CXX
+  LANGUAGES C CXX
   )
 
 ### Set release mode as default build type
