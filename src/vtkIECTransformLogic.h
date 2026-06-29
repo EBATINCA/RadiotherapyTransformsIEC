@@ -23,7 +23,7 @@
 #define __vtkIECTransformLogic_h
 
 //#include "vtkSlicerBeamsModuleLogicExport.h"
-#include "../vtkIECTransformLogicExport.h"
+#include "vtkIECTransformLogicExport.h"
 
 // STD includes
 #include <map>
