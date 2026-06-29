@@ -242,7 +242,7 @@ configure_file(
 
 # Set vtkIECTransformLogic_INSTALL_CMAKE_DIR
 if(NOT DEFINED ${PROJECT_NAME}_INSTALL_CMAKE_DIR)
-  set(${PROJECT_NAME}_INSTALL_CMAKE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/CMake)
+  set(${PROJECT_NAME}_INSTALL_CMAKE_DIR ${CMAKE_INSTALL_PREFIX}/CMake)
 endif()
 
 # Install vtkIECTransformLogicConfig.cmake
