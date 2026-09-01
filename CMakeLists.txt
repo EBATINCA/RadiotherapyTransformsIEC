@@ -103,10 +103,10 @@ if(NOT ${PROJECT_NAME}_INSTALL_NO_DEVELOPMENT)
     set(${PROJECT_NAME}_INSTALL_INCLUDE_DIR include/${PROJECT_NAME})
   endif()
 
-  file(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
+  file(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/*.h" "src/*.h")
   install(
     FILES ${headers} ${CMAKE_CURRENT_BINARY_DIR}/${configure_header_file} ${CMAKE_CURRENT_BINARY_DIR}/${configure_export_header_file}
-    DESTINATION ${${PROJECT_NAME}_INSTALL_INCLUDE_DIR} COMPONENT Development)
+    DESTINATION ${CMAKE_INSTALL_PREFIX}/${${PROJECT_NAME}_INSTALL_INCLUDE_DIR} COMPONENT Development)
 endif()
 
 # --------------------------------------------------------------------------
@@ -242,13 +242,13 @@ configure_file(
 
 # Set vtkIECTransformLogic_INSTALL_CMAKE_DIR
 if(NOT DEFINED ${PROJECT_NAME}_INSTALL_CMAKE_DIR)
-  set(${PROJECT_NAME}_INSTALL_CMAKE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/CMake)
+  set(${PROJECT_NAME}_INSTALL_CMAKE_DIR CMake)
 endif()
 
 # Install vtkIECTransformLogicConfig.cmake
 install(
   FILES ${CMAKE_CURRENT_BINARY_DIR}/install/vtkIECTransformLogicConfig.cmake
-  DESTINATION ${${PROJECT_NAME}_INSTALL_CMAKE_DIR}
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/${${PROJECT_NAME}_INSTALL_CMAKE_DIR}
   )
 
 # Install vtkIECTransformLogic CMake files
@@ -261,5 +261,6 @@ install(
   ${CMAKE_SOURCE_DIR}/CMake/vtkWrapperInit.data.in
   ${CMAKE_SOURCE_DIR}/CMake/vtkWrapPython.cmake
   ${CMAKE_SOURCE_DIR}/CMake/WindowsApplicationUseUtf8.manifest
-  DESTINATION ${${PROJECT_NAME}_INSTALL_CMAKE_DIR} COMPONENT Development
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/${${PROJECT_NAME}_INSTALL_CMAKE_DIR} COMPONENT Development
   )
+#install(EXPORT ${lib_name} DESTINATION ${CMAKE_INSTALL_PREFIX}) 
