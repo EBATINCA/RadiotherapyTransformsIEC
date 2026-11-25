@@ -22,6 +22,12 @@ include(GNUInstallDirs)
 include(CMakeDependentOption)
 include(vtkIECTransformLogicFunctionAddExecutable)
 
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+set(CMAKE_INSTALL_RPATH
+  "$<IF:$<PLATFORM_ID:Darwin>,@loader_path,\$ORIGIN>"
+  "$<IF:$<PLATFORM_ID:Darwin>,@loader_path,\$ORIGIN>/../${CMAKE_INSTALL_LIBDIR}"
+)
+
 # --------------------------------------------------------------------------
 # Dependencies
 # --------------------------------------------------------------------------
