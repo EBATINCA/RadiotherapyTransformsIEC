@@ -18,8 +18,15 @@ endif()
 set(vtkIECTransformLogic_CMAKE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/CMake)
 set(CMAKE_MODULE_PATH ${vtkIECTransformLogic_CMAKE_DIR} ${CMAKE_MODULE_PATH})
 
+include(GNUInstallDirs)
 include(CMakeDependentOption)
 include(vtkIECTransformLogicFunctionAddExecutable)
+
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+set(CMAKE_INSTALL_RPATH
+  "$<IF:$<PLATFORM_ID:Darwin>,@loader_path,\$ORIGIN>"
+  "$<IF:$<PLATFORM_ID:Darwin>,@loader_path,\$ORIGIN>/../${CMAKE_INSTALL_LIBDIR}"
+)
 
 # --------------------------------------------------------------------------
 # Dependencies
@@ -90,23 +97,54 @@ source_group("Generated" FILES
   )
 
 # --------------------------------------------------------------------------
-# Install headers
+# Install paths & headers (GNUInstallDirs)
 # --------------------------------------------------------------------------
 
-if(NOT DEFINED ${PROJECT_NAME}_INSTALL_NO_DEVELOPMENT)
-  set(${PROJECT_NAME}_INSTALL_NO_DEVELOPMENT ON)
+# Install the development files (headers, CMake package config, exported
+# targets) in addition to the runtime library. OFF by default so a plain
+# install ships only the runtime; turn ON for packaging / standalone install
+# trees. (CMP0077 is NEW at this cmake_minimum_required, so a parent project may
+# still override this before add_subdirectory().)
+option(${PROJECT_NAME}_INSTALL_DEVELOPMENT
+  "Install ${PROJECT_NAME} development files (headers, CMake package config, exported targets)" OFF)
+
+# Backward compatibility: honor the deprecated, inverted
+# ${PROJECT_NAME}_INSTALL_NO_DEVELOPMENT if a consumer still sets it.
+if(DEFINED ${PROJECT_NAME}_INSTALL_NO_DEVELOPMENT)
+  message(DEPRECATION
+    "${PROJECT_NAME}_INSTALL_NO_DEVELOPMENT is deprecated; use ${PROJECT_NAME}_INSTALL_DEVELOPMENT (inverted value).")
+  if(${PROJECT_NAME}_INSTALL_NO_DEVELOPMENT)
+    set(${PROJECT_NAME}_INSTALL_DEVELOPMENT OFF CACHE BOOL "" FORCE)
+  else()
+    set(${PROJECT_NAME}_INSTALL_DEVELOPMENT ON CACHE BOOL "" FORCE)
+  endif()
 endif()
 
-if(NOT ${PROJECT_NAME}_INSTALL_NO_DEVELOPMENT)
+if(NOT DEFINED ${PROJECT_NAME}_INSTALL_BIN_DIR)
+  set(${PROJECT_NAME}_INSTALL_BIN_DIR ${CMAKE_INSTALL_BINDIR})
+endif()
 
-  if(NOT DEFINED ${PROJECT_NAME}_INSTALL_INCLUDE_DIR)
-    set(${PROJECT_NAME}_INSTALL_INCLUDE_DIR include/${PROJECT_NAME})
-  endif()
+if(NOT DEFINED ${PROJECT_NAME}_INSTALL_LIB_DIR)
+  set(${PROJECT_NAME}_INSTALL_LIB_DIR ${CMAKE_INSTALL_LIBDIR})
+endif()
 
-  file(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
+if(NOT DEFINED ${PROJECT_NAME}_INSTALL_INCLUDE_DIR)
+  set(${PROJECT_NAME}_INSTALL_INCLUDE_DIR ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME})
+endif()
+
+if(NOT DEFINED ${PROJECT_NAME}_INSTALL_CMAKE_DIR)
+  set(${PROJECT_NAME}_INSTALL_CMAKE_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
+endif()
+
+if(${PROJECT_NAME}_INSTALL_DEVELOPMENT)
+  file(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h")
   install(
-    FILES ${headers} ${CMAKE_CURRENT_BINARY_DIR}/${configure_header_file} ${CMAKE_CURRENT_BINARY_DIR}/${configure_export_header_file}
-    DESTINATION ${${PROJECT_NAME}_INSTALL_INCLUDE_DIR} COMPONENT Development)
+    FILES
+      ${headers}
+      ${CMAKE_CURRENT_BINARY_DIR}/${configure_header_file}
+    DESTINATION ${${PROJECT_NAME}_INSTALL_INCLUDE_DIR}
+    COMPONENT Development
+  )
 endif()
 
 # --------------------------------------------------------------------------
@@ -135,7 +173,7 @@ set(srcs ${vtkIECTransformLogic_SRCS})
 add_library(${lib_name} SHARED ${srcs}) #SHARED = THERE IS DLL FILE
 target_include_directories(${lib_name} PUBLIC
   "$<BUILD_INTERFACE:${include_dirs}>"
-  "$<INSTALL_INTERFACE:${INSTALL_PREFIX}/include/${lib_name}>"  # <prefix>/include/mylib
+  "$<INSTALL_INTERFACE:${${PROJECT_NAME}_INSTALL_INCLUDE_DIR}>"
 )
 target_link_libraries(${lib_name} PUBLIC ${vtkIECTransformLogic_LIBS})
 
@@ -150,29 +188,27 @@ if(NOT "${${PROJECT_NAME}_FOLDER}" STREQUAL "")
 endif()
 
 # --------------------------------------------------------------------------
-# Export target
+# Export target (Build Tree)
 # --------------------------------------------------------------------------
-
-# Export targets for a build tree
 if(NOT DEFINED ${PROJECT_NAME}_EXPORT_FILE)
   set(${PROJECT_NAME}_EXPORT_FILE ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake)
 endif()
 export(TARGETS ${lib_name} APPEND FILE ${${PROJECT_NAME}_EXPORT_FILE})
 
 # --------------------------------------------------------------------------
-# Install library
+# Install library & export targets (Install Tree)
 # --------------------------------------------------------------------------
-if(NOT DEFINED ${PROJECT_NAME}_INSTALL_BIN_DIR)
-  set(${PROJECT_NAME}_INSTALL_BIN_DIR bin)
-endif()
-if(NOT DEFINED ${PROJECT_NAME}_INSTALL_LIB_DIR)
-  set(${PROJECT_NAME}_INSTALL_LIB_DIR lib/${PROJECT_NAME})
-endif()
-
 install(TARGETS ${lib_name}
+  EXPORT ${PROJECT_NAME}Targets
   RUNTIME DESTINATION ${${PROJECT_NAME}_INSTALL_BIN_DIR} COMPONENT RuntimeLibraries
   LIBRARY DESTINATION ${${PROJECT_NAME}_INSTALL_LIB_DIR} COMPONENT RuntimeLibraries
   ARCHIVE DESTINATION ${${PROJECT_NAME}_INSTALL_LIB_DIR} COMPONENT Development
+  )
+
+install(EXPORT ${PROJECT_NAME}Targets
+  FILE ${PROJECT_NAME}Targets.cmake
+  DESTINATION ${${PROJECT_NAME}_INSTALL_CMAKE_DIR}
+  COMPONENT Development
   )
 
 # --------------------------------------------------------------------------
@@ -230,36 +266,39 @@ configure_file(
   ${CMAKE_CURRENT_BINARY_DIR}/vtkIECTransformLogicConfig.cmake
   )
 
-# Configuret vtkIECTransformLogicConfig.cmake for an install tree
-configure_file(
+# Configure vtkIECTransformLogicConfig.cmake for an install tree
+include(CMakePackageConfigHelpers)
+
+configure_package_config_file(
   ${CMAKE_CURRENT_SOURCE_DIR}/vtkIECTransformLogicInstallConfig.cmake.in
   ${CMAKE_CURRENT_BINARY_DIR}/install/vtkIECTransformLogicConfig.cmake
+  INSTALL_DESTINATION ${${PROJECT_NAME}_INSTALL_CMAKE_DIR}
+  PATH_VARS
+    ${PROJECT_NAME}_INSTALL_CMAKE_DIR
+    ${PROJECT_NAME}_INSTALL_INCLUDE_DIR
+    ${PROJECT_NAME}_INSTALL_LIB_DIR
   )
 
 # --------------------------------------------------------------------------
 # Install configuration files
 # --------------------------------------------------------------------------
 
-# Set vtkIECTransformLogic_INSTALL_CMAKE_DIR
-if(NOT DEFINED ${PROJECT_NAME}_INSTALL_CMAKE_DIR)
-  set(${PROJECT_NAME}_INSTALL_CMAKE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/CMake)
-endif()
-
 # Install vtkIECTransformLogicConfig.cmake
 install(
   FILES ${CMAKE_CURRENT_BINARY_DIR}/install/vtkIECTransformLogicConfig.cmake
   DESTINATION ${${PROJECT_NAME}_INSTALL_CMAKE_DIR}
+  COMPONENT Development
   )
 
 # Install vtkIECTransformLogic CMake files
 install(
   FILES
-  ${CMAKE_SOURCE_DIR}/CMake/vtkIECTransformLogicFunctionAddExecutable.cmake
-  ${CMAKE_SOURCE_DIR}/CMake/vtkIECTransformLogicFunctionAddExecutable.cmake
-  ${CMAKE_SOURCE_DIR}/CMake/vtkMacroKitPythonWrap.cmake
-  ${CMAKE_SOURCE_DIR}/CMake/vtkWrapHierarchy.cmake
-  ${CMAKE_SOURCE_DIR}/CMake/vtkWrapperInit.data.in
-  ${CMAKE_SOURCE_DIR}/CMake/vtkWrapPython.cmake
-  ${CMAKE_SOURCE_DIR}/CMake/WindowsApplicationUseUtf8.manifest
-  DESTINATION ${${PROJECT_NAME}_INSTALL_CMAKE_DIR} COMPONENT Development
+    ${CMAKE_CURRENT_SOURCE_DIR}/CMake/vtkIECTransformLogicFunctionAddExecutable.cmake
+    ${CMAKE_CURRENT_SOURCE_DIR}/CMake/vtkMacroKitPythonWrap.cmake
+    ${CMAKE_CURRENT_SOURCE_DIR}/CMake/vtkWrapHierarchy.cmake
+    ${CMAKE_CURRENT_SOURCE_DIR}/CMake/vtkWrapperInit.data.in
+    ${CMAKE_CURRENT_SOURCE_DIR}/CMake/vtkWrapPython.cmake
+    ${CMAKE_CURRENT_SOURCE_DIR}/CMake/WindowsApplicationUseUtf8.manifest
+    DESTINATION ${${PROJECT_NAME}_INSTALL_CMAKE_DIR}
+    COMPONENT Development
   )
